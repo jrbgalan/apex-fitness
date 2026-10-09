@@ -168,3 +168,4 @@ export default function AdminLogin({ onSuccess }: AdminLoginProps) {
     </div>
   );
 }
+

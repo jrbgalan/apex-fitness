@@ -78,3 +78,4 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Note: /admin and /checkout are strictly excluded
   return [...staticRoutes, ...locationRoutes];
 }
+

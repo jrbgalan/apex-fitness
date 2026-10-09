@@ -1178,3 +1178,4 @@ export const SEED_NEWSLETTER_SUBSCRIBERS: NewsletterSubscriberData[] = [
   { id: 'sub-324', email: 'sam.v@vista.ph', created_at: getDateDaysAgo(87, 5) },
   { id: 'sub-325', email: 'c.bautista@stage.ph', created_at: getDateDaysAgo(89, 2) },
 ];
+

@@ -747,3 +747,4 @@ export default function AdminClasses({ classes, scheduleSlots, onRefresh }: Admi
     </div>
   );
 }
+

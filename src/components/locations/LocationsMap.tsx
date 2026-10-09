@@ -44,6 +44,12 @@ function getUserLocationIcon() {
   });
 }
 
+function isValidCoordinate(lat?: unknown, lng?: unknown): lat is number {
+  if (typeof lat !== 'number' || typeof lng !== 'number') return false;
+  if (isNaN(lat) || isNaN(lng) || !isFinite(lat) || !isFinite(lng)) return false;
+  return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+}
+
 // Controller component to handle bounds fitting, fly-to animations, and mobile interaction lock
 function MapController({
   locations,
@@ -55,19 +61,54 @@ function MapController({
   userCoords?: { latitude: number; longitude: number } | null;
 }) {
   const map = useMap();
-  const prevSelectedRef = useRef<string | null>(null);
+  const prevSelectedRef = useRef<string | null>(selectedLocationId);
+
+  // Invalidate map size shortly after mount to ensure accurate container dimensions
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try {
+        map.invalidateSize();
+      } catch {}
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [map]);
 
   // Handle fly-to on selection change
   useEffect(() => {
     if (!selectedLocationId) return;
+
+    // Do not fly on initial load or if selection is unchanged
+    if (prevSelectedRef.current === selectedLocationId) return;
+
     const target = locations.find((l) => l.id === selectedLocationId || l.slug === selectedLocationId);
-    if (target && prevSelectedRef.current !== selectedLocationId) {
-      map.flyTo([target.latitude, target.longitude], 14, {
-        duration: 1.2,
-        easeLinearity: 0.25,
-      });
+    if (target && isValidCoordinate(target.latitude, target.longitude)) {
       prevSelectedRef.current = selectedLocationId;
+
+      try {
+        // Stop any currently running animation before starting a new flyTo
+        map.stop();
+
+        const size = map.getSize();
+        if (size && size.x > 0 && size.y > 0) {
+          map.flyTo([target.latitude, target.longitude], 14, {
+            duration: 1.2,
+            easeLinearity: 0.25,
+          });
+        } else {
+          // If container has not yet computed layout dimensions, set view directly
+          map.setView([target.latitude, target.longitude], 14);
+        }
+      } catch (err) {
+        console.warn('Map flyTo navigation safely caught:', err);
+      }
     }
+
+    // Crucial: Cancel any running Leaflet animation when unmounting or changing target
+    return () => {
+      try {
+        map.stop();
+      } catch {}
+    };
   }, [selectedLocationId, locations, map]);
 
   // Fit bounds when locations list changes and no specific location is selected
@@ -75,22 +116,38 @@ function MapController({
     if (locations.length === 0) return;
 
     if (!selectedLocationId) {
-      const latLngs: [number, number][] = locations.map((loc) => [loc.latitude, loc.longitude]);
-      if (userCoords) {
+      const validLocs = locations.filter((loc) => isValidCoordinate(loc.latitude, loc.longitude));
+      const latLngs: [number, number][] = validLocs.map((loc) => [loc.latitude, loc.longitude]);
+
+      if (userCoords && isValidCoordinate(userCoords.latitude, userCoords.longitude)) {
         latLngs.push([userCoords.latitude, userCoords.longitude]);
       }
 
       if (latLngs.length === 1) {
-        map.setView(latLngs[0], 14);
-      } else {
-        const bounds = L.latLngBounds(latLngs);
-        map.fitBounds(bounds, {
-          padding: [48, 48],
-          maxZoom: 13,
-          animate: true,
-        });
+        try {
+          map.stop();
+          map.setView(latLngs[0], 14);
+        } catch {}
+      } else if (latLngs.length > 1) {
+        try {
+          map.stop();
+          const bounds = L.latLngBounds(latLngs);
+          if (bounds.isValid()) {
+            map.fitBounds(bounds, {
+              padding: [48, 48],
+              maxZoom: 13,
+              animate: false,
+            });
+          }
+        } catch {}
       }
     }
+
+    return () => {
+      try {
+        map.stop();
+      } catch {}
+    };
   }, [locations, userCoords, map, selectedLocationId]);
 
   return null;
@@ -107,15 +164,17 @@ export default function LocationsMap({
   const [tileError, setTileError] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
 
-  // Metro Manila center default
+  // Metro Manila center default (strictly validated)
   const defaultCenter: [number, number] = useMemo(() => {
     if (locations.length > 0) {
       const target = selectedLocationId
         ? locations.find((l) => l.id === selectedLocationId || l.slug === selectedLocationId) || locations[0]
         : locations[0];
-      return [target.latitude, target.longitude];
+      if (target && isValidCoordinate(target.latitude, target.longitude)) {
+        return [target.latitude, target.longitude];
+      }
     }
-    return [14.5507, 121.0504]; // BGC Flagship
+    return [14.5507, 121.0504]; // BGC Flagship fallback
   }, [locations, selectedLocationId]);
 
   const tileLayerUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
@@ -154,7 +213,7 @@ export default function LocationsMap({
         />
 
         {/* User Location Marker if available */}
-        {userCoords && (
+        {userCoords && isValidCoordinate(userCoords.latitude, userCoords.longitude) && (
           <Marker
             position={[userCoords.latitude, userCoords.longitude]}
             icon={getUserLocationIcon()}
@@ -168,16 +227,18 @@ export default function LocationsMap({
         )}
 
         {/* Location Markers */}
-        {locations.map((loc) => {
-          const isActive = loc.id === selectedLocationId || loc.slug === selectedLocationId;
-          return (
-            <Marker
-              key={loc.id}
-              position={[loc.latitude, loc.longitude]}
-              icon={getChampagneIcon(isActive)}
-              eventHandlers={{
-                click: () => {
-                  onSelectLocation(loc.id);
+        {locations
+          .filter((loc) => isValidCoordinate(loc.latitude, loc.longitude))
+          .map((loc) => {
+            const isActive = loc.id === selectedLocationId || loc.slug === selectedLocationId;
+            return (
+              <Marker
+                key={loc.id}
+                position={[loc.latitude, loc.longitude]}
+                icon={getChampagneIcon(isActive)}
+                eventHandlers={{
+                  click: () => {
+                    onSelectLocation(loc.id);
                 },
               }}
             >

@@ -185,18 +185,25 @@ export default function Locations() {
     });
 
     // If user coordinates exist, compute distance and sort by proximity
-    if (userCoords) {
+    if (
+      userCoords &&
+      typeof userCoords.latitude === 'number' &&
+      typeof userCoords.longitude === 'number'
+    ) {
       result = result
         .map((loc) => ({
           ...loc,
-          _distance: calculateDistanceKm(
-            userCoords.latitude,
-            userCoords.longitude,
-            loc.latitude,
-            loc.longitude
-          ),
+          _distance:
+            typeof loc.latitude === 'number' && typeof loc.longitude === 'number'
+              ? calculateDistanceKm(
+                  userCoords.latitude,
+                  userCoords.longitude,
+                  loc.latitude,
+                  loc.longitude
+                )
+              : undefined,
         }))
-        .sort((a, b) => (a._distance || 0) - (b._distance || 0));
+        .sort((a, b) => (a._distance ?? Infinity) - (b._distance ?? Infinity));
     }
 
     return result;
@@ -509,12 +516,17 @@ export default function Locations() {
                       const status = getLocationHoursStatus(loc);
                       const distance =
                         userCoords &&
-                        calculateDistanceKm(
-                          userCoords.latitude,
-                          userCoords.longitude,
-                          loc.latitude,
-                          loc.longitude
-                        );
+                        typeof userCoords.latitude === 'number' &&
+                        typeof userCoords.longitude === 'number' &&
+                        typeof loc.latitude === 'number' &&
+                        typeof loc.longitude === 'number'
+                          ? calculateDistanceKm(
+                              userCoords.latitude,
+                              userCoords.longitude,
+                              loc.latitude,
+                              loc.longitude
+                            )
+                          : null;
 
                       return (
                         <motion.article

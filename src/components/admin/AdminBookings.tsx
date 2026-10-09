@@ -443,3 +443,4 @@ export default function AdminBookings({ bookings, onRefresh }: AdminBookingsProp
     </div>
   );
 }
+

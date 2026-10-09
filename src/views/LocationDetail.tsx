@@ -297,7 +297,11 @@ export default function LocationDetail({
   const filteredDaySlots = scheduleSlots.filter((slot) => slot.day === activeDay);
 
   // Google Maps Directions Link
-  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`;
+  const destinationParam =
+    typeof location.latitude === 'number' && typeof location.longitude === 'number'
+      ? `${location.latitude},${location.longitude}`
+      : encodeURIComponent(location.address || location.name);
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destinationParam}`;
 
   return (
     <PageTransition>
