@@ -65,17 +65,17 @@ type MapLayerType = 'dark' | 'google' | 'satellite';
 
 const MAP_LAYERS: Record<
   MapLayerType,
-  { label: string; url: string; subdomains?: string[]; attribution: string; maxZoom: number }
+  { label: string; url: string; subdomains?: string[]; attribution: string; maxZoom: number; className?: string }
 > = {
   dark: {
-    label: 'Dark Luxury',
-    url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    subdomains: ['a', 'b', 'c', 'd'],
-    attribution: '&copy; CARTO &copy; OpenStreetMap',
-    maxZoom: 19,
+    label: 'Dark Mode',
+    url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps',
+    maxZoom: 20,
+    className: 'leaflet-tile-dark',
   },
   google: {
-    label: 'Google Maps',
+    label: 'Roadmap',
     url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
     attribution: '&copy; Google Maps',
     maxZoom: 20,
@@ -375,6 +375,7 @@ export default function LocationsMap({
             attribution={activeLayer.attribution}
             subdomains={activeLayer.subdomains || []}
             maxZoom={activeLayer.maxZoom}
+            className={activeLayer.className}
           />
 
           <MapController

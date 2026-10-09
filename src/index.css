@@ -225,6 +225,11 @@
   outline: none;
 }
 
+/* Zero-API-Key Dark Map Shader */
+.leaflet-tile-dark {
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(100%) saturate(60%) !important;
+}
+
 .leaflet-popup-content-wrapper {
   background: #141414 !important;
   color: #f5f5f5 !important;
