@@ -23,8 +23,6 @@ import {
   Shield,
   Smile,
   Check,
-  Navigation,
-  Calendar,
 } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import SectionHeading from '@/components/SectionHeading';
@@ -515,7 +513,7 @@ export default function Locations() {
                   )}
                 >
                   <AnimatePresence mode="popLayout">
-                    {processedLocations.map((loc, idx) => {
+                    {processedLocations.map((loc) => {
                       const isSelected = selectedLocationId === loc.id;
                       const status = getLocationHoursStatus(loc);
                       const distance =
@@ -532,10 +530,6 @@ export default function Locations() {
                             )
                           : null;
 
-                      const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                        `${loc.name}, ${loc.address}`
-                      )}`;
-
                       return (
                         <motion.article
                           key={loc.id}
@@ -547,19 +541,14 @@ export default function Locations() {
                           onMouseEnter={() => setSelectedLocationId(loc.id)}
                           onClick={() => setSelectedLocationId(loc.id)}
                           className={cn(
-                            'group relative rounded-none border transition-all duration-300 overflow-hidden flex flex-col',
+                            'group border bg-card/60 transition-all duration-300 relative overflow-hidden',
                             isSelected
-                              ? 'border-primary/80 bg-[#121212] shadow-[0_16px_36px_rgba(0,0,0,0.7),0_0_24px_rgba(212,175,55,0.1)] ring-1 ring-primary/40 -translate-y-1'
-                              : 'border-border/60 bg-[#0c0c0c]/90 hover:border-border hover:bg-[#101010] hover:-translate-y-0.5'
+                              ? 'border-primary shadow-lg ring-1 ring-primary/40'
+                              : 'border-border/60 hover:border-border hover:-translate-y-0.5'
                           )}
                         >
-                          {/* Active Champagne Indicator Bar on Left */}
-                          {isSelected && (
-                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary via-primary/80 to-primary/40 z-30 shadow-[0_0_12px_rgba(212,175,55,0.8)]" />
-                          )}
-
-                          {/* Image Container with slow zoom hover & cinematic overlays */}
-                          <div className="relative aspect-[16/9] w-full overflow-hidden bg-neutral-950">
+                          {/* Image Container with slow zoom hover */}
+                          <div className="relative aspect-[16/10] w-full overflow-hidden bg-neutral-900">
                             <Image
                               src={loc.photo}
                               alt={loc.name}
@@ -567,45 +556,38 @@ export default function Locations() {
                               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                               className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                             />
-                            {/* Radial & Gradient shading */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-black/40 to-black/20" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
-                            {/* Top row: District pill + Sanctuary index / Distance */}
-                            <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 pointer-events-none">
-                              <span className="text-[0.62rem] uppercase tracking-ultra px-2.5 py-1 bg-black/85 backdrop-blur-md border border-primary/40 text-primary font-mono font-medium shadow-md">
+                            {/* District badge */}
+                            <div className="absolute top-3 left-3 flex items-center gap-2">
+                              <span className="text-[0.64rem] uppercase tracking-ultra px-2.5 py-1 bg-black/80 backdrop-blur-md border border-primary/40 text-primary font-mono font-medium">
                                 {loc.neighborhood || loc.city}
                               </span>
-
-                              <div className="flex items-center gap-1.5">
-                                {distance !== undefined && distance !== null ? (
-                                  <span className="text-[0.62rem] uppercase tracking-wider px-2 py-0.5 bg-black/85 backdrop-blur-md border border-sky-400/40 text-sky-400 font-mono shadow-md">
-                                    {distance} km away
-                                  </span>
-                                ) : (
-                                  <span className="text-[0.6rem] uppercase tracking-ultra px-2 py-0.5 bg-black/80 backdrop-blur-md border border-border/60 text-muted-foreground font-mono">
-                                    Sanctuary 0{idx + 1}
-                                  </span>
-                                )}
-                              </div>
                             </div>
 
-                            {/* Bottom row: Live Hours Status Badge */}
-                            <div className="absolute bottom-3 left-3 flex items-center gap-2 text-[0.68rem] font-mono px-2.5 py-1 bg-black/85 backdrop-blur-md border border-border/80 shadow-md">
+                            {/* Distance Badge if Geolocation is Active */}
+                            {distance !== undefined && distance !== null && (
+                              <div className="absolute top-3 right-3 text-[0.64rem] uppercase tracking-wider px-2 py-0.5 bg-black/85 backdrop-blur-md border border-sky-400/40 text-sky-400 font-mono">
+                                {distance} km away
+                              </div>
+                            )}
+
+                            {/* Live Hours Status Badge */}
+                            <div className="absolute bottom-3 left-3 flex items-center gap-2 text-[0.7rem] font-mono px-2.5 py-1 bg-black/80 backdrop-blur-md border border-border/80">
                               <span
                                 className={cn(
-                                  'w-2 h-2 rounded-full shrink-0',
+                                  'w-2 h-2 rounded-full',
                                   status.is24Hours
-                                    ? 'bg-primary shadow-[0_0_8px_rgba(212,175,55,0.8)] animate-pulse'
+                                    ? 'bg-primary animate-pulse'
                                     : status.isOpen
-                                    ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse'
+                                    ? 'bg-emerald-400 animate-pulse'
                                     : 'bg-muted-foreground'
                                 )}
                               />
                               <span
                                 className={cn(
-                                  'font-medium tracking-wide',
                                   status.is24Hours
-                                    ? 'text-primary'
+                                    ? 'text-primary font-semibold'
                                     : status.isOpen
                                     ? 'text-emerald-400'
                                     : 'text-muted-foreground'
@@ -614,110 +596,54 @@ export default function Locations() {
                                 {status.statusText}
                               </span>
                             </div>
-
-                            {/* Hover prompt indicator */}
-                            <div className="absolute bottom-3 right-3 hidden sm:flex items-center gap-1 text-[0.6rem] font-mono text-primary/80 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 px-2 py-0.5 border border-primary/30">
-                              <span>Map Focus</span>
-                            </div>
-                          </div>
-
-                          {/* Architectural Micro-Metrics Bar */}
-                          <div className="grid grid-cols-3 divide-x divide-border/40 border-b border-border/50 bg-black/40 text-center py-2.5 px-2">
-                            <div className="flex flex-col items-center justify-center px-1">
-                              <span className="text-[0.68rem] font-mono text-primary font-semibold tracking-wider">
-                                {loc.stats ? `${loc.stats.sqft.toLocaleString()}` : '15,000+'}
-                              </span>
-                              <span className="text-[0.55rem] uppercase tracking-ultra text-muted-foreground font-mono">
-                                Sq Ft Floor
-                              </span>
-                            </div>
-
-                            <div className="flex flex-col items-center justify-center px-1">
-                              <span className="text-[0.68rem] font-mono text-foreground font-semibold tracking-wider">
-                                {loc.stats?.studios ?? 3} Studios
-                              </span>
-                              <span className="text-[0.55rem] uppercase tracking-ultra text-muted-foreground font-mono">
-                                Disciplines
-                              </span>
-                            </div>
-
-                            <div className="flex flex-col items-center justify-center px-1">
-                              <span className="text-[0.68rem] font-mono text-foreground font-semibold tracking-wider">
-                                {loc.stats?.trainers ?? 12} Coaches
-                              </span>
-                              <span className="text-[0.55rem] uppercase tracking-ultra text-muted-foreground font-mono">
-                                Master Roster
-                              </span>
-                            </div>
                           </div>
 
                           {/* Card Content */}
-                          <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-                            <div className="space-y-2">
-                              <h3 className="font-heading text-2xl font-light text-foreground group-hover:text-primary transition-colors tracking-wide">
+                          <div className="p-5 md:p-6 space-y-4">
+                            <div>
+                              <h3 className="font-heading text-2xl font-normal text-foreground group-hover:text-primary transition-colors">
                                 {loc.name}
                               </h3>
-                              <p className="text-xs text-muted-foreground flex items-start gap-1.5 leading-relaxed">
-                                <MapPin className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
-                                <span className="line-clamp-1">{loc.address}</span>
-                              </p>
-                              <p className="text-foreground/75 text-xs sm:text-[0.82rem] line-clamp-2 leading-relaxed pt-1">
-                                {loc.description}
+                              <p className="mt-1 text-xs text-muted-foreground flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                                <span>{loc.address}</span>
                               </p>
                             </div>
 
+                            <p className="text-foreground/75 text-xs sm:text-sm line-clamp-2 leading-relaxed">
+                              {loc.description}
+                            </p>
+
                             {/* Amenity Badges */}
-                            <div className="space-y-2 pt-1">
-                              <div className="flex flex-wrap gap-1.5">
-                                {loc.amenities.slice(0, 4).map((amenity) => (
-                                  <span
-                                    key={amenity}
-                                    className="text-[0.62rem] uppercase tracking-wider px-2 py-0.5 bg-card/90 border border-border/60 text-muted-foreground font-mono group-hover:border-primary/30 transition-colors"
-                                  >
-                                    {amenity}
-                                  </span>
-                                ))}
-                                {loc.amenities.length > 4 && (
-                                  <span className="text-[0.62rem] uppercase tracking-wider px-2 py-0.5 bg-primary/10 border border-primary/20 text-primary font-mono font-medium">
-                                    +{loc.amenities.length - 4} more
-                                  </span>
-                                )}
-                              </div>
+                            <div className="flex flex-wrap gap-1.5 pt-1">
+                              {loc.amenities.slice(0, 4).map((amenity) => (
+                                <span
+                                  key={amenity}
+                                  className="text-[0.65rem] uppercase tracking-wider px-2 py-1 bg-card border border-border/60 text-muted-foreground font-mono"
+                                >
+                                  {amenity}
+                                </span>
+                              ))}
+                              {loc.amenities.length > 4 && (
+                                <span className="text-[0.65rem] uppercase tracking-wider px-1.5 py-1 text-primary font-mono">
+                                  +{loc.amenities.length - 4} more
+                                </span>
+                              )}
                             </div>
 
                             {/* Action Row */}
-                            <div className="pt-4 border-t border-border/60 flex items-center justify-between gap-3">
-                              {/* Directions link */}
-                              <a
-                                href={directionsUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="inline-flex items-center gap-1.5 text-[0.7rem] uppercase tracking-wider font-mono text-muted-foreground hover:text-primary transition-colors py-1 min-h-[44px]"
-                                title="Open Directions in Google Maps"
-                              >
-                                <Navigation className="w-3.5 h-3.5 text-primary" />
-                                <span className="hidden sm:inline">Directions</span>
-                              </a>
-
-                              <div className="flex items-center gap-2">
-                                <Link
-                                  to={`/book-tour?location=${loc.slug}`}
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[0.65rem] uppercase tracking-wider font-mono font-semibold border border-border/70 hover:border-primary/60 text-foreground hover:text-primary transition-all min-h-[44px]"
-                                >
-                                  <Calendar className="w-3 h-3 text-primary" />
-                                  <span>Book Tour</span>
-                                </Link>
-
-                                <Link
-                                  to={`/locations/${loc.slug}`}
-                                  className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground text-[0.68rem] uppercase tracking-wider font-semibold hover:bg-primary/90 transition-all min-h-[44px]"
-                                >
-                                  <span>View Club</span>
-                                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
-                                </Link>
+                            <div className="pt-4 border-t border-border/60 flex items-center justify-between">
+                              <div className="text-[0.7rem] font-mono text-muted-foreground">
+                                {loc.stats ? `${loc.stats.sqft.toLocaleString()} sqft` : 'Private Club'}
                               </div>
+
+                              <Link
+                                to={`/locations/${loc.slug}`}
+                                className="inline-flex items-center gap-2 text-xs uppercase tracking-wider font-semibold text-primary group-hover:text-primary transition-all relative overflow-hidden py-1 min-h-[44px]"
+                              >
+                                <span>View Club</span>
+                                <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                              </Link>
                             </div>
                           </div>
                         </motion.article>
