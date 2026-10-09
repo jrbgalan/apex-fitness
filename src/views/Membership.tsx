@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/api/client';
 import PageTransition from '@/components/PageTransition';
 import SectionHeading from '@/components/SectionHeading';
@@ -64,29 +64,62 @@ export default function Membership() {
           className="mx-auto"
         />
 
-        {/* Monthly / Annual Toggle */}
+        {/* Monthly / Annual Toggle with Sliding Pill Indicator */}
         <div className="mt-10 flex flex-col items-center gap-3">
-          <div className="inline-flex border border-border/80 p-1 bg-card/60 rounded-none shadow-sm">
+          <div className="relative inline-flex border border-border/80 p-1 bg-card/80 shadow-md">
             <button
               onClick={() => setAnnual(false)}
-              className={cn(
-                'min-h-[44px] px-6 py-2.5 text-[0.7rem] uppercase tracking-ultra transition-all select-none flex items-center justify-center font-medium',
-                !annual ? 'bg-primary text-primary-foreground font-semibold shadow-sm' : 'text-foreground/60 hover:text-foreground'
-              )}
+              className="relative min-h-[44px] px-6 py-2.5 text-[0.7rem] uppercase tracking-ultra transition-colors select-none flex items-center justify-center font-medium z-10"
             >
-              Monthly Billing
+              {!annual && (
+                <motion.div
+                  layoutId="billing-pill"
+                  className="absolute inset-0 bg-primary shadow-sm"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span
+                className={cn(
+                  'relative z-10 transition-colors',
+                  !annual ? 'text-primary-foreground font-semibold' : 'text-foreground/70 hover:text-foreground'
+                )}
+              >
+                Monthly Billing
+              </span>
             </button>
+
             <button
               onClick={() => setAnnual(true)}
-              className={cn(
-                'min-h-[44px] px-6 py-2.5 text-[0.7rem] uppercase tracking-ultra transition-all select-none flex items-center justify-center font-medium gap-2',
-                annual ? 'bg-primary text-primary-foreground font-semibold shadow-sm' : 'text-foreground/60 hover:text-foreground'
-              )}
+              className="relative min-h-[44px] px-6 py-2.5 text-[0.7rem] uppercase tracking-ultra transition-colors select-none flex items-center justify-center font-medium z-10 gap-2"
             >
-              <span>Annual Billing</span>
-              <span className="text-[0.62rem] bg-background/20 px-1.5 py-0.5 rounded font-mono">
-                ~20% OFF
+              {annual && (
+                <motion.div
+                  layoutId="billing-pill"
+                  className="absolute inset-0 bg-primary shadow-sm"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span
+                className={cn(
+                  'relative z-10 transition-colors',
+                  annual ? 'text-primary-foreground font-semibold' : 'text-foreground/70 hover:text-foreground'
+                )}
+              >
+                Annual Billing
               </span>
+              <AnimatePresence>
+                {annual && (
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    className="relative z-10 text-[0.62rem] bg-black/30 text-primary-foreground px-1.5 py-0.5 rounded font-mono font-semibold"
+                  >
+                    Save 20%
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </button>
           </div>
           <p className="text-[0.62rem] uppercase tracking-ultra text-primary/80 font-mono">

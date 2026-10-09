@@ -104,24 +104,93 @@ const MembershipSignupsAPI = {
   },
 };
 
+const ProductsAPI = {
+  getProductsCatalog: (): ProductItem[] => {
+    const stored = getStorage<ProductItem[] | null>('apex_products_catalog', null);
+    if (stored && Array.isArray(stored) && stored.length > 0) {
+      return stored;
+    }
+    // Seed initial products if not in storage
+    setStorage('apex_products_catalog', INITIAL_PRODUCTS);
+    return INITIAL_PRODUCTS;
+  },
+  list: async (category?: string): Promise<ProductItem[]> => {
+    await new Promise((r) => setTimeout(r, 150));
+    const catalog = ProductsAPI.getProductsCatalog();
+    if (category && category !== 'All') {
+      return catalog.filter((p) => p.category.toLowerCase() === category.toLowerCase());
+    }
+    return [...catalog];
+  },
+  get: async (id: string): Promise<ProductItem | null> => {
+    await new Promise((r) => setTimeout(r, 100));
+    const catalog = ProductsAPI.getProductsCatalog();
+    return catalog.find((p) => p.id === id) || null;
+  },
+};
+
 const OrdersAPI = {
   create: async (data: OrderData): Promise<OrderData> => {
-    await new Promise((r) => setTimeout(r, 550));
+    await new Promise((r) => setTimeout(r, 600));
     if (!data.customer_name || !data.email || !data.shipping_address) {
       throw new Error('Please fill in your recipient name, email, and shipping address.');
     }
     if (!data.items || data.items.length === 0) {
       throw new Error('Your cart is currently empty.');
     }
+
+    // 1. Stock check & deduction
+    const catalog = [...ProductsAPI.getProductsCatalog()];
+    for (const item of data.items) {
+      const prodIndex = catalog.findIndex((p) => p.id === item.product.id);
+      if (prodIndex === -1) {
+        throw new Error(`Product "${item.product.name}" was not found in our catalog.`);
+      }
+      const prod = catalog[prodIndex];
+      if (prod.stock < item.quantity) {
+        throw new Error(
+          prod.stock === 0
+            ? `Sorry, "${prod.name}" is now completely sold out.`
+            : `Sorry, only ${prod.stock} units of "${prod.name}" remain available.`
+        );
+      }
+      // Deduce stock
+      catalog[prodIndex] = {
+        ...prod,
+        stock: Math.max(0, prod.stock - item.quantity),
+      };
+    }
+
+    // Save updated catalog
+    setStorage('apex_products_catalog', catalog);
+
+    // 2. Generate unique order
+    const orderNum = `APX-${Math.floor(100000 + Math.random() * 900000)}`;
+    const now = new Date();
+    // Estimated delivery in 3 business days
+    const estDeliveryDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    const estDeliveryStr = estDeliveryDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+
     const orders = getStorage<OrderData[]>('apex_orders', []);
     const newOrder: OrderData = {
-      id: `ORD-${Date.now().toString().slice(-6)}`,
+      id: orderNum,
+      order_number: orderNum,
       ...data,
-      status: 'confirmed',
-      created_at: new Date().toISOString(),
+      status: 'Processing',
+      estimated_delivery: estDeliveryStr,
+      created_at: now.toISOString(),
     };
     setStorage('apex_orders', [...orders, newOrder]);
     return newOrder;
+  },
+  get: async (id: string): Promise<OrderData | null> => {
+    await new Promise((r) => setTimeout(r, 150));
+    const orders = getStorage<OrderData[]>('apex_orders', []);
+    return orders.find((o) => o.id === id || o.order_number === id) || null;
   },
   list: async (): Promise<OrderData[]> => {
     return getStorage<OrderData[]>('apex_orders', []);
@@ -223,17 +292,7 @@ export const api = {
       get: async (id: string): Promise<LocationItem | null> =>
         INITIAL_LOCATIONS.find((l) => l.id === id) || null,
     },
-    Products: {
-      list: async (category?: string): Promise<ProductItem[]> => {
-        await new Promise((r) => setTimeout(r, 200));
-        if (category && category !== 'All') {
-          return INITIAL_PRODUCTS.filter((p) => p.category.toLowerCase() === category.toLowerCase());
-        }
-        return [...INITIAL_PRODUCTS];
-      },
-      get: async (id: string): Promise<ProductItem | null> =>
-        INITIAL_PRODUCTS.find((p) => p.id === id) || null,
-    },
+    Products: ProductsAPI,
     Orders: OrdersAPI,
     MembershipSignups: MembershipSignupsAPI,
     ContactInquiries: ContactInquiriesAPI,

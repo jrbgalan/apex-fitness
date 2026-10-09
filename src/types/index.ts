@@ -96,6 +96,7 @@ export interface ProductItem {
   badge?: 'New' | 'Best Seller';
   sizes?: string[];
   flavors?: string[];
+  member_price?: number;
 }
 
 export interface CartItem {
@@ -108,13 +109,24 @@ export interface CartItem {
 
 export interface OrderData {
   id?: string;
+  order_number?: string;
   customer_name: string;
   email: string;
   phone?: string;
   shipping_address: string;
-  items: CartItem[];
+  shipping_city?: string;
+  shipping_postal?: string;
+  shipping_district?: string;
+  delivery_method?: 'Standard' | 'Express';
+  delivery_cost?: number;
+  promo_code?: string;
+  discount_amount?: number;
+  tax_amount?: number;
   subtotal: number;
+  total?: number;
+  items: CartItem[];
   status?: string;
+  estimated_delivery?: string;
   created_at?: string;
 }
 

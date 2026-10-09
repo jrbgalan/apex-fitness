@@ -1,11 +1,13 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { X, Plus, Minus, Trash2, ShoppingBag, CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { X, Plus, Minus, Trash2, ShoppingBag, ArrowRight, Sparkles } from 'lucide-react';
 import { useCart } from '@/lib/CartContext';
-import { api } from '@/api/client';
+import { INITIAL_PRODUCTS } from '@/data/mockData';
 import { EASE } from '@/lib/motion';
+import { ProductItem } from '@/types';
 
 export default function CartDrawer() {
   const {
@@ -14,40 +16,30 @@ export default function CartDrawer() {
     setCartOpen,
     updateQuantity,
     removeFromCart,
-    clearCart,
+    addToCart,
     totalItems,
     subtotal,
+    amountToFreeShipping,
+    freeShippingProgress,
+    isFreeShipping,
   } = useCart();
 
-  const [checkoutStep, setCheckoutStep] = useState<'cart' | 'checkout' | 'success'>('cart');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [orderId, setOrderId] = useState<string | null>(null);
-
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    paymentMethod: 'member_charge',
-  });
-
+  const router = useRouter();
   const drawerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Reset checkout step when closed
+  // Responsive detection
   useEffect(() => {
-    if (!cartOpen) {
-      setTimeout(() => {
-        setCheckoutStep('cart');
-        setError(null);
-      }, 300);
-    }
-  }, [cartOpen]);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  // Lock body scroll and handle Escape key
+  // Body scroll lock & Escape key
   useEffect(() => {
     if (!cartOpen) return;
-    const originalStyle = window.getComputedStyle(document.body).overflow;
+    const originalOverflow = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -59,38 +51,25 @@ export default function CartDrawer() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => {
-      document.body.style.overflow = originalStyle;
+      document.body.style.overflow = originalOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [cartOpen, setCartOpen]);
 
-  const handleCheckoutSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.name || !form.email || !form.address) {
-      setError('Please fill in your name, email, and shipping address.');
-      return;
-    }
-    setError(null);
-    setLoading(true);
+  // "You may also like" recommendations: products not currently in cart
+  const recommendations = useMemo(() => {
+    const inCartIds = new Set(cart.map((item) => item.product.id));
+    return INITIAL_PRODUCTS.filter((p) => !inCartIds.has(p.id) && p.stock > 0).slice(0, 3);
+  }, [cart]);
 
-    try {
-      const order = await api.entities.Orders.create({
-        customer_name: form.name,
-        email: form.email,
-        phone: form.phone,
-        shipping_address: form.address,
-        items: cart,
-        subtotal,
-      });
+  const handleCheckoutClick = () => {
+    setCartOpen(false);
+    router.push('/checkout');
+  };
 
-      setOrderId(order.id || `ORD-${Date.now().toString().slice(-6)}`);
-      clearCart();
-      setCheckoutStep('success');
-    } catch (err: any) {
-      setError(err?.message || 'Failed to complete order. Please try again.');
-    } finally {
-      setLoading(false);
-    }
+  const handleContinueShopping = () => {
+    setCartOpen(false);
+    router.push('/shop');
   };
 
   return (
@@ -104,30 +83,28 @@ export default function CartDrawer() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={() => setCartOpen(false)}
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-background/80 backdrop-blur-sm"
           />
 
-          {/* Drawer container */}
-          <div className="fixed inset-y-0 right-0 flex max-w-full pl-6">
+          {/* Drawer / Bottom sheet */}
+          <div className="fixed inset-0 pointer-events-none flex flex-col justify-end md:flex-row md:justify-end">
             <motion.div
               ref={drawerRef}
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              initial={isMobile ? { y: '100%' } : { x: '100%' }}
+              animate={isMobile ? { y: 0 } : { x: 0 }}
+              exit={isMobile ? { y: '100%' } : { x: '100%' }}
               transition={{ duration: 0.45, ease: EASE }}
               role="dialog"
               aria-modal="true"
-              aria-label="Shopping Cart"
-              className="w-screen max-w-md bg-card border-l border-border/80 shadow-2xl flex flex-col"
+              aria-label="Shopping Bag"
+              className="pointer-events-auto w-full md:w-screen md:max-w-md max-h-[90vh] md:max-h-full bg-card border-t md:border-t-0 md:border-l border-border/80 shadow-2xl flex flex-col rounded-t-2xl md:rounded-none overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-border/60">
+              <div className="flex items-center justify-between px-6 py-4 md:py-5 border-b border-border/60 shrink-0 bg-card">
                 <div className="flex items-center gap-3">
                   <ShoppingBag className="w-5 h-5 text-primary" />
                   <h2 className="font-heading text-lg tracking-wider text-foreground">
-                    {checkoutStep === 'cart' && `Your Bag (${totalItems})`}
-                    {checkoutStep === 'checkout' && 'Checkout'}
-                    {checkoutStep === 'success' && 'Order Confirmed'}
+                    Your Selection ({totalItems})
                   </h2>
                 </div>
                 <button
@@ -139,288 +116,210 @@ export default function CartDrawer() {
                 </button>
               </div>
 
-              {/* Body */}
-              <div className="flex-1 overflow-y-auto px-6 py-6">
-                {checkoutStep === 'cart' && (
+              {/* Free-shipping progress bar */}
+              <div className="px-6 py-3.5 bg-secondary/30 border-b border-border/50 shrink-0">
+                <div className="flex justify-between items-center text-xs mb-1.5 font-medium">
+                  {isFreeShipping ? (
+                    <span className="text-primary font-semibold flex items-center gap-1.5 text-[0.72rem]">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Complimentary Express Shipping Unlocked
+                    </span>
+                  ) : (
+                    <span className="text-foreground/80 text-[0.72rem]">
+                      Add <span className="font-mono text-primary font-semibold">${amountToFreeShipping.toFixed(0)}</span> for free shipping
+                    </span>
+                  )}
+                  <span className="text-[0.65rem] text-muted-foreground font-mono">
+                    {freeShippingProgress.toFixed(0)}%
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${freeShippingProgress}%` }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                    className="h-full bg-primary"
+                  />
+                </div>
+              </div>
+
+              {/* Scrollable Items Body */}
+              <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+                {cart.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center py-16">
+                    <div className="w-16 h-16 rounded-full bg-secondary/50 border border-border flex items-center justify-center text-muted-foreground mb-4">
+                      <ShoppingBag className="w-7 h-7" />
+                    </div>
+                    <h3 className="font-heading text-lg mb-2 text-foreground">Your bag is empty</h3>
+                    <p className="text-xs text-muted-foreground max-w-xs mb-8 leading-relaxed">
+                      Elevate your performance. Explore signature apparel, clean supplements, and studio gear.
+                    </p>
+                    <button
+                      onClick={handleContinueShopping}
+                      className="min-h-[44px] px-8 py-3 bg-primary text-primary-foreground text-xs uppercase tracking-wider font-semibold hover:bg-primary/90 transition-colors"
+                    >
+                      Continue Shopping
+                    </button>
+                  </div>
+                ) : (
                   <>
-                    {cart.length === 0 ? (
-                      <div className="h-full flex flex-col items-center justify-center text-center py-16">
-                        <div className="w-16 h-16 rounded-full bg-secondary/50 border border-border flex items-center justify-center text-muted-foreground mb-4">
-                          <ShoppingBag className="w-7 h-7" />
-                        </div>
-                        <h3 className="font-heading text-lg mb-2">Your shopping bag is empty</h3>
-                        <p className="text-xs text-muted-foreground max-w-xs mb-6">
-                          Explore our collection of premium apparel, certified supplements, and studio-grade training equipment.
-                        </p>
-                        <button
-                          onClick={() => setCartOpen(false)}
-                          className="px-6 py-3 bg-primary text-primary-foreground text-xs uppercase tracking-wider font-medium hover:bg-primary/90 transition-colors"
+                    <div className="space-y-4">
+                      {cart.map((item) => (
+                        <motion.div
+                          key={item.id}
+                          layout
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="flex gap-4 pb-4 border-b border-border/40"
                         >
-                          Discover The Shop
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="space-y-5">
-                        {cart.map((item) => (
-                          <motion.div
-                            key={item.id}
-                            layout
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="flex gap-4 pb-5 border-b border-border/40"
-                          >
-                            {/* Product Thumbnail */}
-                            <div className="relative w-20 h-24 bg-secondary/40 shrink-0 overflow-hidden border border-border/60">
-                              <Image
-                                src={item.product.image}
-                                alt={item.product.name}
-                                fill
-                                sizes="80px"
-                                className="object-cover"
-                              />
-                            </div>
+                          {/* Image */}
+                          <div className="relative w-20 h-24 bg-secondary/40 shrink-0 overflow-hidden border border-border/60">
+                            <Image
+                              src={item.product.image}
+                              alt={item.product.name}
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                            />
+                            <div className="absolute inset-0 bg-background/10 pointer-events-none" />
+                          </div>
 
-                            {/* Details */}
-                            <div className="flex-1 flex flex-col justify-between">
-                              <div>
-                                <div className="flex justify-between items-start gap-2">
-                                  <h4 className="font-heading text-sm text-foreground line-clamp-1">
-                                    {item.product.name}
-                                  </h4>
-                                  <button
-                                    onClick={() => removeFromCart(item.id)}
-                                    aria-label={`Remove ${item.product.name}`}
-                                    className="text-muted-foreground hover:text-destructive p-1 min-h-[32px] min-w-[32px] flex items-center justify-center transition-colors"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                                {(item.selectedSize || item.selectedFlavor) && (
-                                  <p className="text-[0.75rem] text-primary/90 mt-0.5">
-                                    {[item.selectedSize, item.selectedFlavor].filter(Boolean).join(' · ')}
-                                  </p>
-                                )}
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                  ${item.product.price} each
+                          {/* Info */}
+                          <div className="flex-1 flex flex-col justify-between">
+                            <div>
+                              <div className="flex justify-between items-start gap-2">
+                                <h4 className="font-heading text-sm text-foreground line-clamp-1">
+                                  {item.product.name}
+                                </h4>
+                                <button
+                                  onClick={() => removeFromCart(item.id)}
+                                  aria-label={`Remove ${item.product.name}`}
+                                  className="text-muted-foreground hover:text-destructive p-1 min-h-[36px] min-w-[36px] flex items-center justify-center transition-colors -mr-1"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+
+                              {(item.selectedSize || item.selectedFlavor) && (
+                                <p className="text-[0.72rem] text-primary/90 mt-0.5 font-mono">
+                                  {[item.selectedSize, item.selectedFlavor].filter(Boolean).join(' · ')}
                                 </p>
+                              )}
+
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                ${item.product.price} each
+                              </p>
+                            </div>
+
+                            {/* Stepper + Subtotal */}
+                            <div className="flex items-center justify-between mt-3">
+                              <div className="flex items-center border border-border/80 bg-background/60">
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                  aria-label="Decrease quantity"
+                                  className="p-1.5 text-muted-foreground hover:text-foreground min-h-[36px] min-w-[36px] flex items-center justify-center transition-colors"
+                                >
+                                  <Minus className="w-3.5 h-3.5" />
+                                </button>
+                                <span className="px-2.5 text-xs font-mono font-medium min-w-[24px] text-center">
+                                  {item.quantity}
+                                </span>
+                                <button
+                                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                  aria-label="Increase quantity"
+                                  className="p-1.5 text-muted-foreground hover:text-foreground min-h-[36px] min-w-[36px] flex items-center justify-center transition-colors"
+                                >
+                                  <Plus className="w-3.5 h-3.5" />
+                                </button>
                               </div>
 
-                              {/* Quantity and Line Total */}
-                              <div className="flex items-center justify-between mt-3">
-                                <div className="flex items-center border border-border/80 bg-background/50 rounded-sm">
-                                  <button
-                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                    aria-label="Decrease quantity"
-                                    className="p-1.5 text-muted-foreground hover:text-foreground min-h-[34px] min-w-[34px] flex items-center justify-center transition-colors"
-                                  >
-                                    <Minus className="w-3.5 h-3.5" />
-                                  </button>
-                                  <span className="px-2.5 text-xs font-mono font-medium min-w-[24px] text-center">
-                                    {item.quantity}
-                                  </span>
-                                  <button
-                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                    aria-label="Increase quantity"
-                                    className="p-1.5 text-muted-foreground hover:text-foreground min-h-[34px] min-w-[34px] flex items-center justify-center transition-colors"
-                                  >
-                                    <Plus className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                                <span className="text-sm font-semibold text-foreground">
-                                  ${item.product.price * item.quantity}
-                                </span>
-                              </div>
+                              <span className="text-sm font-semibold text-foreground font-mono">
+                                ${item.product.price * item.quantity}
+                              </span>
                             </div>
-                          </motion.div>
-                        ))}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    {/* "You may also like" row */}
+                    {recommendations.length > 0 && (
+                      <div className="pt-4 border-t border-border/60">
+                        <p className="text-[0.68rem] uppercase tracking-ultra text-primary font-mono mb-3">
+                          You may also like
+                        </p>
+                        <div className="space-y-3">
+                          {recommendations.map((rec) => (
+                            <div
+                              key={rec.id}
+                              className="flex items-center justify-between gap-3 p-2.5 bg-secondary/30 border border-border/60 hover:border-border transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="relative w-12 h-12 bg-secondary/50 shrink-0 overflow-hidden border border-border/40">
+                                  <Image src={rec.image} alt={rec.name} fill sizes="48px" className="object-cover" />
+                                </div>
+                                <div>
+                                  <p className="text-xs font-medium text-foreground line-clamp-1">{rec.name}</p>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    <span className="text-xs font-mono text-primary font-semibold">${rec.price}</span>
+                                    {rec.member_price && (
+                                      <span className="text-[0.62rem] text-muted-foreground font-mono">
+                                        Member: ${rec.member_price}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => addToCart(rec, 1)}
+                                aria-label={`Add ${rec.name}`}
+                                className="min-h-[36px] px-3 text-[0.65rem] uppercase tracking-wider font-semibold border border-primary/50 text-primary hover:bg-primary hover:text-primary-foreground transition-colors shrink-0"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </>
                 )}
-
-                {checkoutStep === 'checkout' && (
-                  <form id="checkout-form" onSubmit={handleCheckoutSubmit} className="space-y-4">
-                    {error && (
-                      <div className="p-3 text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded">
-                        {error}
-                      </div>
-                    )}
-
-                    <div>
-                      <label className="block text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-1.5">
-                        Full Name *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                        placeholder="John Doe"
-                        className="w-full px-3.5 py-2.5 bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary transition-colors min-h-[44px]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-1.5">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
-                        placeholder="john@apexfitness.com"
-                        className="w-full px-3.5 py-2.5 bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary transition-colors min-h-[44px]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-1.5">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        placeholder="+63 917 123 4567"
-                        className="w-full px-3.5 py-2.5 bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary transition-colors min-h-[44px]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-1.5">
-                        Delivery Address *
-                      </label>
-                      <textarea
-                        required
-                        rows={2}
-                        value={form.address}
-                        onChange={(e) => setForm({ ...form, address: e.target.value })}
-                        placeholder="Bonifacio Global City, Taguig, Metro Manila"
-                        className="w-full px-3.5 py-2.5 bg-background border border-border text-foreground text-sm focus:outline-none focus:border-primary transition-colors resize-none"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-1.5">
-                        Payment Method
-                      </label>
-                      <div className="space-y-2">
-                        <label className="flex items-center gap-3 p-3 border border-primary/50 bg-primary/5 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="payment"
-                            value="member_charge"
-                            checked={form.paymentMethod === 'member_charge'}
-                            onChange={() => setForm({ ...form, paymentMethod: 'member_charge' })}
-                            className="text-primary focus:ring-primary"
-                          />
-                          <div>
-                            <p className="text-xs font-medium text-foreground">Charge to Apex Account</p>
-                            <p className="text-[0.7rem] text-muted-foreground">Billed on your next membership cycle</p>
-                          </div>
-                        </label>
-                        <label className="flex items-center gap-3 p-3 border border-border/80 bg-background/50 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="payment"
-                            value="card_on_file"
-                            checked={form.paymentMethod === 'card_on_file'}
-                            onChange={() => setForm({ ...form, paymentMethod: 'card_on_file' })}
-                            className="text-primary focus:ring-primary"
-                          />
-                          <div>
-                            <p className="text-xs font-medium text-foreground">Credit Card on File (Mock)</p>
-                            <p className="text-[0.7rem] text-muted-foreground">Instant zero-touch payment</p>
-                          </div>
-                        </label>
-                      </div>
-                    </div>
-                  </form>
-                )}
-
-                {checkoutStep === 'success' && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="h-full flex flex-col items-center justify-center text-center py-10"
-                  >
-                    <div className="w-16 h-16 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary mb-5">
-                      <CheckCircle2 className="w-9 h-9" />
-                    </div>
-                    <h3 className="font-heading text-2xl mb-2 text-foreground">Order Placed</h3>
-                    <p className="text-xs uppercase tracking-widest text-primary font-mono mb-4">
-                      #{orderId}
-                    </p>
-                    <p className="text-xs text-muted-foreground max-w-xs leading-relaxed mb-8">
-                      Thank you for your order. A digital invoice and delivery tracking notification have been dispatched to your email.
-                    </p>
-                    <button
-                      onClick={() => setCartOpen(false)}
-                      className="w-full py-3.5 bg-primary text-primary-foreground text-xs uppercase tracking-wider font-medium hover:bg-primary/90 transition-colors"
-                    >
-                      Return to Store
-                    </button>
-                  </motion.div>
-                )}
               </div>
 
-              {/* Footer Summary */}
-              {checkoutStep !== 'success' && cart.length > 0 && (
-                <div className="border-t border-border/60 p-6 bg-card/60 backdrop-blur-sm space-y-4">
+              {/* Footer with Checkout CTA */}
+              {cart.length > 0 && (
+                <div className="border-t border-border/60 p-6 bg-card shrink-0 space-y-4">
                   <div className="space-y-1.5 text-xs">
                     <div className="flex justify-between text-muted-foreground">
                       <span>Subtotal</span>
                       <span className="font-mono text-foreground">${subtotal}</span>
                     </div>
                     <div className="flex justify-between text-muted-foreground">
-                      <span>Express Shipping</span>
-                      <span className="text-primary uppercase tracking-wider text-[0.65rem] font-semibold">
-                        Complimentary
+                      <span>Estimated Shipping</span>
+                      <span className="font-mono text-foreground">
+                        {isFreeShipping ? (
+                          <span className="text-primary font-semibold uppercase text-[0.65rem]">
+                            Free
+                          </span>
+                        ) : (
+                          '$15'
+                        )}
                       </span>
                     </div>
                     <div className="flex justify-between text-foreground font-semibold pt-2 border-t border-border/40 text-sm">
-                      <span>Estimated Total</span>
+                      <span>Subtotal</span>
                       <span className="font-mono text-primary">${subtotal}</span>
                     </div>
                   </div>
 
-                  {checkoutStep === 'cart' ? (
-                    <button
-                      onClick={() => setCheckoutStep('checkout')}
-                      className="w-full min-h-[46px] bg-primary text-primary-foreground text-xs uppercase tracking-wider font-medium hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group"
-                    >
-                      <span>Proceed to Checkout</span>
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                    </button>
-                  ) : (
-                    <div className="flex gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setCheckoutStep('cart')}
-                        disabled={loading}
-                        className="px-4 py-3 border border-border text-foreground text-xs uppercase tracking-wider hover:bg-secondary/50 transition-colors min-h-[46px]"
-                      >
-                        Back
-                      </button>
-                      <button
-                        type="submit"
-                        form="checkout-form"
-                        disabled={loading}
-                        className="flex-1 min-h-[46px] bg-primary text-primary-foreground text-xs uppercase tracking-wider font-medium hover:bg-primary/90 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
-                      >
-                        {loading ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            <span>Processing...</span>
-                          </>
-                        ) : (
-                          <span>Place Order · ${subtotal}</span>
-                        )}
-                      </button>
-                    </div>
-                  )}
+                  <button
+                    onClick={handleCheckoutClick}
+                    className="w-full min-h-[48px] bg-primary text-primary-foreground text-xs uppercase tracking-wider font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 group shadow-md"
+                  >
+                    <span>Proceed to Checkout</span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </button>
                 </div>
               )}
             </motion.div>
@@ -430,4 +329,3 @@ export default function CartDrawer() {
     </AnimatePresence>
   );
 }
-

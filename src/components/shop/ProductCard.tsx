@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { Star, Plus, Check } from 'lucide-react';
+import { Star, Plus, Check, Ban } from 'lucide-react';
 import { ProductItem } from '@/types';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/lib/CartContext';
@@ -16,8 +16,12 @@ export default function ProductCard({ product, onOpenDetail }: ProductCardProps)
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
 
+  const isSoldOut = product.stock <= 0;
+
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isSoldOut) return;
+
     // If product has multiple sizes or flavors, open detail drawer to pick
     if ((product.sizes && product.sizes.length > 1) || (product.flavors && product.flavors.length > 1)) {
       onOpenDetail(product);
@@ -47,7 +51,10 @@ export default function ProductCard({ product, onOpenDetail }: ProductCardProps)
           onOpenDetail(product);
         }
       }}
-      className="group relative flex flex-col bg-card border border-border/70 hover:border-border text-left cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary"
+      className={cn(
+        'group relative flex flex-col bg-card border border-border/70 hover:border-border text-left cursor-pointer transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary',
+        isSoldOut && 'opacity-85'
+      )}
     >
       {/* Product Image Container with Image Hover Swap */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-secondary/40">
@@ -59,12 +66,12 @@ export default function ProductCard({ product, onOpenDetail }: ProductCardProps)
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className={cn(
             'object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]',
-            product.hover_image && isHovered ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+            product.hover_image && isHovered && !isSoldOut ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
           )}
         />
 
-        {/* Hover Image (if present) */}
-        {product.hover_image && (
+        {/* Hover Image (if present & not sold out) */}
+        {product.hover_image && !isSoldOut && (
           <Image
             src={product.hover_image}
             alt={`${product.name} alternate view`}
@@ -80,35 +87,47 @@ export default function ProductCard({ product, onOpenDetail }: ProductCardProps)
         {/* Dark cohesive overlay */}
         <div className="absolute inset-0 bg-background/20 group-hover:bg-background/10 transition-colors pointer-events-none" />
 
-        {/* Badge */}
-        {product.badge && (
-          <div className="absolute top-3 left-3 z-10">
-            <span
-              className={cn(
-                'text-[0.62rem] uppercase tracking-wider font-semibold px-2.5 py-1 backdrop-blur-sm',
-                product.badge === 'Best Seller'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-background/85 text-foreground border border-border/80'
-              )}
-            >
-              {product.badge}
+        {/* Badge (or Sold Out) */}
+        <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start">
+          {isSoldOut ? (
+            <span className="text-[0.62rem] uppercase tracking-wider font-semibold px-2.5 py-1 bg-destructive/90 text-destructive-foreground backdrop-blur-sm">
+              Sold Out
             </span>
+          ) : (
+            product.badge && (
+              <span
+                className={cn(
+                  'text-[0.62rem] uppercase tracking-wider font-semibold px-2.5 py-1 backdrop-blur-sm',
+                  product.badge === 'Best Seller'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-background/85 text-foreground border border-border/80'
+                )}
+              >
+                {product.badge}
+              </span>
+            )
+          )}
+        </div>
+
+        {/* Quick Add Overlay Button (or Sold Out indicator) */}
+        {!isSoldOut ? (
+          <button
+            onClick={handleQuickAdd}
+            aria-label={`Quick add ${product.name} to cart`}
+            className={cn(
+              'absolute bottom-3 right-3 z-10 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-none transition-all duration-300 shadow-md',
+              added
+                ? 'bg-primary text-primary-foreground opacity-100'
+                : 'bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground opacity-95 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-2 sm:group-hover:translate-y-0'
+            )}
+          >
+            {added ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          </button>
+        ) : (
+          <div className="absolute bottom-3 right-3 z-10 flex items-center justify-center min-h-[36px] px-2.5 bg-background/90 border border-border/80 text-[0.62rem] uppercase tracking-wider font-mono text-muted-foreground">
+            Out of Stock
           </div>
         )}
-
-        {/* Quick Add Overlay Button */}
-        <button
-          onClick={handleQuickAdd}
-          aria-label={`Quick add ${product.name} to cart`}
-          className={cn(
-            'absolute bottom-3 right-3 z-10 flex items-center justify-center min-h-[44px] min-w-[44px] rounded-none transition-all duration-300 shadow-md',
-            added
-              ? 'bg-primary text-primary-foreground opacity-100'
-              : 'bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground opacity-95 sm:opacity-0 sm:group-hover:opacity-100 sm:translate-y-2 sm:group-hover:translate-y-0'
-          )}
-        >
-          {added ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-        </button>
       </div>
 
       {/* Product Details */}
@@ -133,16 +152,32 @@ export default function ProductCard({ product, onOpenDetail }: ProductCardProps)
           </p>
         </div>
 
-        <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
-          <span className="font-heading text-lg text-foreground font-semibold">
-            ${product.price}
-          </span>
-          <span className="text-[0.68rem] uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1">
-            Details →
-          </span>
+        <div className="mt-4 pt-3 border-t border-border/40 space-y-2">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="font-heading text-lg text-foreground font-semibold">
+                ${product.price}
+              </span>
+              {product.member_price && (
+                <span className="text-[0.68rem] text-primary/90 font-mono font-medium">
+                  Member: ${product.member_price}
+                </span>
+              )}
+            </div>
+            <span className="text-[0.68rem] uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors flex items-center gap-1">
+              Details →
+            </span>
+          </div>
+
+          {product.member_price && (
+            <div className="pt-0.5">
+              <span className="inline-block text-[0.58rem] uppercase tracking-wider text-primary font-mono px-1.5 py-0.5 bg-primary/10 border border-primary/25">
+                Member Price Available
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-

@@ -1,22 +1,25 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { X, Star, Plus, Minus, Check, ShoppingBag, ShieldCheck } from 'lucide-react';
+import { X, Star, Plus, Minus, Check, ShoppingBag, ShieldCheck, Ban } from 'lucide-react';
 import { ProductItem } from '@/types';
 import { useCart } from '@/lib/CartContext';
+import { INITIAL_PRODUCTS } from '@/data/mockData';
 import { EASE } from '@/lib/motion';
 
 interface ProductDetailDrawerProps {
   product: ProductItem | null;
   open: boolean;
   onClose: () => void;
+  onSelectProduct?: (p: ProductItem) => void;
 }
 
 export default function ProductDetailDrawer({
   product,
   open,
   onClose,
+  onSelectProduct,
 }: ProductDetailDrawerProps) {
   const { addToCart, setCartOpen } = useCart();
   const [selectedImage, setSelectedImage] = useState<string>('');
@@ -55,7 +58,16 @@ export default function ProductDetailDrawer({
     };
   }, [open, onClose]);
 
+  const relatedProducts = useMemo(() => {
+    if (!product) return [];
+    return INITIAL_PRODUCTS.filter(
+      (p) => p.id !== product.id && (p.category === product.category || p.stock > 0)
+    ).slice(0, 3);
+  }, [product]);
+
   if (!product) return null;
+
+  const isSoldOut = product.stock <= 0;
 
   const galleryImages = [
     product.image,
@@ -64,6 +76,7 @@ export default function ProductDetailDrawer({
   ].filter((src, idx, arr) => arr.indexOf(src) === idx);
 
   const handleAddToCart = () => {
+    if (isSoldOut) return;
     addToCart(
       product,
       quantity,
@@ -132,10 +145,16 @@ export default function ProductDetailDrawer({
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-background/15 pointer-events-none" />
-                    {product.badge && (
-                      <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[0.62rem] uppercase tracking-wider font-semibold px-2.5 py-1">
-                        {product.badge}
+                    {isSoldOut ? (
+                      <span className="absolute top-3 left-3 bg-destructive text-destructive-foreground text-[0.62rem] uppercase tracking-wider font-semibold px-2.5 py-1">
+                        Sold Out
                       </span>
+                    ) : (
+                      product.badge && (
+                        <span className="absolute top-3 left-3 bg-primary text-primary-foreground text-[0.62rem] uppercase tracking-wider font-semibold px-2.5 py-1">
+                          {product.badge}
+                        </span>
+                      )
                     )}
                   </div>
 
@@ -171,12 +190,18 @@ export default function ProductDetailDrawer({
                       <span className="font-mono text-xs font-semibold">{product.rating.toFixed(1)}</span>
                     </div>
                   </div>
-                  <div className="mt-3 flex items-baseline gap-2">
+                  
+                  <div className="mt-3 flex flex-wrap items-baseline gap-3">
                     <span className="font-heading text-3xl text-foreground font-semibold">
                       ${product.price}
                     </span>
+                    {product.member_price && (
+                      <span className="text-xs font-mono font-medium text-primary bg-primary/10 border border-primary/25 px-2 py-0.5 uppercase tracking-wider">
+                        Member Price: ${product.member_price}
+                      </span>
+                    )}
                     <span className="text-xs text-muted-foreground uppercase tracking-wider">
-                      Tax included · In Stock ({product.stock} available)
+                      {isSoldOut ? 'Out of Stock' : `In Stock (${product.stock} available)`}
                     </span>
                   </div>
                 </div>
@@ -249,38 +274,78 @@ export default function ProductDetailDrawer({
                     Apex Club Authentic Guarantee. Tested for athletic purity and crafted from commercial-grade materials.
                   </span>
                 </div>
+
+                {/* "You may also like" row */}
+                {relatedProducts.length > 0 && (
+                  <div className="pt-4 border-t border-border/60">
+                    <p className="text-[0.68rem] uppercase tracking-ultra text-primary font-mono mb-3">
+                      You May Also Like
+                    </p>
+                    <div className="grid grid-cols-3 gap-3">
+                      {relatedProducts.map((rel) => (
+                        <div
+                          key={rel.id}
+                          onClick={() => onSelectProduct?.(rel)}
+                          className="group/rel cursor-pointer bg-card border border-border/50 p-2 text-left hover:border-primary/60 transition-colors"
+                        >
+                          <div className="relative aspect-square w-full bg-secondary/40 overflow-hidden mb-2">
+                            <Image src={rel.image} alt={rel.name} fill sizes="100px" className="object-cover group-hover/rel:scale-105 transition-transform" />
+                          </div>
+                          <p className="text-[0.68rem] text-foreground font-medium line-clamp-1 group-hover/rel:text-primary">
+                            {rel.name}
+                          </p>
+                          <p className="text-[0.65rem] text-primary font-mono font-semibold mt-0.5">
+                            ${rel.price}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Footer / Add to Cart Actions */}
               <div className="border-t border-border/60 p-6 bg-card/60 backdrop-blur-sm space-y-4">
                 <div className="flex items-center gap-4">
                   {/* Quantity adjustment */}
-                  <div className="flex items-center border border-border bg-background rounded-none">
-                    <button
-                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                      aria-label="Decrease quantity"
-                      className="p-2 text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="px-3 text-xs font-mono font-semibold min-w-[32px] text-center">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
-                      aria-label="Increase quantity"
-                      className="p-2 text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {!isSoldOut && (
+                    <div className="flex items-center border border-border bg-background rounded-none">
+                      <button
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        aria-label="Decrease quantity"
+                        className="p-2 text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </button>
+                      <span className="px-3 text-xs font-mono font-semibold min-w-[32px] text-center">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
+                        aria-label="Increase quantity"
+                        className="p-2 text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
 
                   {/* Add to cart CTA */}
                   <button
                     onClick={handleAddToCart}
-                    className="flex-1 min-h-[46px] bg-primary text-primary-foreground text-xs uppercase tracking-wider font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2"
+                    disabled={isSoldOut}
+                    className={`flex-1 min-h-[46px] text-xs uppercase tracking-wider font-semibold transition-all flex items-center justify-center gap-2 ${
+                      isSoldOut
+                        ? 'bg-secondary text-muted-foreground cursor-not-allowed border border-border'
+                        : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    }`}
                   >
-                    {isAdded ? (
+                    {isSoldOut ? (
+                      <>
+                        <Ban className="w-4 h-4" />
+                        <span>Sold Out</span>
+                      </>
+                    ) : isAdded ? (
                       <>
                         <Check className="w-4 h-4" />
                         <span>Added to Bag</span>
@@ -301,4 +366,3 @@ export default function ProductDetailDrawer({
     </AnimatePresence>
   );
 }
-

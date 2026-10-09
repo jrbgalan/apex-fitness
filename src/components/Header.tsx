@@ -23,7 +23,7 @@ export const NAV_LINKS = [
 export default function Header() {
   const { scrollDir, scrolled } = useScrollDirection();
   const [open, setOpen] = useState(false);
-  const { totalItems, setCartOpen } = useCart();
+  const { totalItems, setCartOpen, badgeBounce } = useCart();
   const hidden = scrollDir === 'down' && scrolled && !open;
 
   return (
@@ -67,9 +67,19 @@ export default function Header() {
             >
               <ShoppingBag className="w-5 h-5" />
               {totalItems > 0 && (
-                <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.62rem] font-bold text-primary-foreground font-mono">
+                <motion.span
+                  key={totalItems}
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={
+                    badgeBounce
+                      ? { scale: [1, 1.45, 0.9, 1.15, 1], opacity: 1 }
+                      : { scale: 1, opacity: 1 }
+                  }
+                  transition={{ duration: 0.45, ease: EASE }}
+                  className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[0.62rem] font-bold text-primary-foreground font-mono shadow-md"
+                >
                   {totalItems}
-                </span>
+                </motion.span>
               )}
             </button>
 
