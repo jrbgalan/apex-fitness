@@ -166,13 +166,22 @@
   animation: pulse-soft 2.4s ease-in-out infinite;
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.animate-shimmer {
+  animation: shimmer 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
   .animate-kenburns,
   .animate-marquee,
-  .animate-pulse-soft {
+  .animate-pulse-soft,
+  .animate-shimmer {
     animation: none !important;
   }
 }

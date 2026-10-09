@@ -98,6 +98,11 @@ export default function TrainerDetailModal({ trainer, onClose }: TrainerDetailMo
                 sizes="(max-width: 768px) 100vw, 450px"
                 className="w-full h-full object-cover"
               />
+              {trainer.credit && (
+                <span className="absolute bottom-2 right-2 text-[0.62rem] text-foreground/80 bg-background/85 px-2 py-0.5 backdrop-blur-sm border border-border/60">
+                  {trainer.credit}
+                </span>
+              )}
             </div>
             <div className="p-8">
               <p className="text-[0.6rem] uppercase tracking-ultra text-primary mb-2">{trainer.role}</p>

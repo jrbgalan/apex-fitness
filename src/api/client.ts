@@ -1,11 +1,23 @@
-import { INITIAL_CLASSES, INITIAL_TRAINERS, INITIAL_PLANS, INITIAL_SCHEDULE_SLOTS } from '@/data/mockData';
+import {
+  INITIAL_CLASSES,
+  INITIAL_TRAINERS,
+  INITIAL_PLANS,
+  INITIAL_SCHEDULE_SLOTS,
+  INITIAL_LOCATIONS,
+  INITIAL_PRODUCTS,
+} from '@/data/mockData';
 import {
   ClassItem,
   TrainerItem,
   MembershipPlanItem,
   ScheduleSlotItem,
+  LocationItem,
+  ProductItem,
   TourBookingData,
   NewsletterSubscriberData,
+  MembershipSignupData,
+  OrderData,
+  ContactInquiryData,
   AuthUser,
 } from '@/types';
 
@@ -71,6 +83,71 @@ const NewsletterAPI = {
   list: async (): Promise<NewsletterSubscriberData[]> => getStorage<NewsletterSubscriberData[]>('apex_newsletter_subscribers', []),
 };
 
+const MembershipSignupsAPI = {
+  create: async (data: MembershipSignupData): Promise<MembershipSignupData> => {
+    await new Promise((r) => setTimeout(r, 500));
+    if (!data.name || !data.email) {
+      throw new Error('Please enter your full name and email address.');
+    }
+    const signups = getStorage<MembershipSignupData[]>('apex_membership_signups', []);
+    const newSignup: MembershipSignupData = {
+      id: `signup-${Date.now()}`,
+      ...data,
+      status: 'confirmed',
+      created_at: new Date().toISOString(),
+    };
+    setStorage('apex_membership_signups', [...signups, newSignup]);
+    return newSignup;
+  },
+  list: async (): Promise<MembershipSignupData[]> => {
+    return getStorage<MembershipSignupData[]>('apex_membership_signups', []);
+  },
+};
+
+const OrdersAPI = {
+  create: async (data: OrderData): Promise<OrderData> => {
+    await new Promise((r) => setTimeout(r, 550));
+    if (!data.customer_name || !data.email || !data.shipping_address) {
+      throw new Error('Please fill in your recipient name, email, and shipping address.');
+    }
+    if (!data.items || data.items.length === 0) {
+      throw new Error('Your cart is currently empty.');
+    }
+    const orders = getStorage<OrderData[]>('apex_orders', []);
+    const newOrder: OrderData = {
+      id: `ORD-${Date.now().toString().slice(-6)}`,
+      ...data,
+      status: 'confirmed',
+      created_at: new Date().toISOString(),
+    };
+    setStorage('apex_orders', [...orders, newOrder]);
+    return newOrder;
+  },
+  list: async (): Promise<OrderData[]> => {
+    return getStorage<OrderData[]>('apex_orders', []);
+  },
+};
+
+const ContactInquiriesAPI = {
+  create: async (data: ContactInquiryData): Promise<ContactInquiryData> => {
+    await new Promise((r) => setTimeout(r, 450));
+    if (!data.name || !data.email || !data.message) {
+      throw new Error('Please provide your name, email, and message.');
+    }
+    const list = getStorage<ContactInquiryData[]>('apex_contact_inquiries', []);
+    const newInquiry: ContactInquiryData = {
+      id: `inq-${Date.now()}`,
+      ...data,
+      created_at: new Date().toISOString(),
+    };
+    setStorage('apex_contact_inquiries', [...list, newInquiry]);
+    return newInquiry;
+  },
+  list: async (): Promise<ContactInquiryData[]> => {
+    return getStorage<ContactInquiryData[]>('apex_contact_inquiries', []);
+  },
+};
+
 export const api = {
   entities: {
     Class: {
@@ -80,7 +157,23 @@ export const api = {
       },
       get: async (id: string): Promise<ClassItem | null> => INITIAL_CLASSES.find((c) => c.id === id) || null,
     },
+    Classes: {
+      list: async (): Promise<ClassItem[]> => {
+        await new Promise((r) => setTimeout(r, 200));
+        return [...INITIAL_CLASSES];
+      },
+      get: async (id: string): Promise<ClassItem | null> => INITIAL_CLASSES.find((c) => c.id === id) || null,
+    },
     Trainer: {
+      list: async (sortBy = 'order', limit = 10): Promise<TrainerItem[]> => {
+        await new Promise((r) => setTimeout(r, 200));
+        let res = [...INITIAL_TRAINERS];
+        if (sortBy === 'order') res.sort((a, b) => a.order - b.order);
+        return res.slice(0, limit);
+      },
+      get: async (id: string): Promise<TrainerItem | null> => INITIAL_TRAINERS.find((t) => t.id === id) || null,
+    },
+    Trainers: {
       list: async (sortBy = 'order', limit = 10): Promise<TrainerItem[]> => {
         await new Promise((r) => setTimeout(r, 200));
         let res = [...INITIAL_TRAINERS];
@@ -98,12 +191,52 @@ export const api = {
       },
       get: async (id: string): Promise<MembershipPlanItem | null> => INITIAL_PLANS.find((p) => p.id === id) || null,
     },
+    MembershipPlans: {
+      list: async (sortBy = 'order', limit = 10): Promise<MembershipPlanItem[]> => {
+        await new Promise((r) => setTimeout(r, 200));
+        let res = [...INITIAL_PLANS];
+        if (sortBy === 'order') res.sort((a, b) => a.order - b.order);
+        return res.slice(0, limit);
+      },
+      get: async (id: string): Promise<MembershipPlanItem | null> => INITIAL_PLANS.find((p) => p.id === id) || null,
+    },
     ScheduleSlot: {
       list: async (): Promise<ScheduleSlotItem[]> => {
         await new Promise((r) => setTimeout(r, 200));
         return [...INITIAL_SCHEDULE_SLOTS];
       },
     },
+    ScheduleSlots: {
+      list: async (): Promise<ScheduleSlotItem[]> => {
+        await new Promise((r) => setTimeout(r, 200));
+        return [...INITIAL_SCHEDULE_SLOTS];
+      },
+    },
+    Locations: {
+      list: async (city?: string): Promise<LocationItem[]> => {
+        await new Promise((r) => setTimeout(r, 200));
+        if (city && city !== 'All') {
+          return INITIAL_LOCATIONS.filter((l) => l.city.toLowerCase() === city.toLowerCase());
+        }
+        return [...INITIAL_LOCATIONS];
+      },
+      get: async (id: string): Promise<LocationItem | null> =>
+        INITIAL_LOCATIONS.find((l) => l.id === id) || null,
+    },
+    Products: {
+      list: async (category?: string): Promise<ProductItem[]> => {
+        await new Promise((r) => setTimeout(r, 200));
+        if (category && category !== 'All') {
+          return INITIAL_PRODUCTS.filter((p) => p.category.toLowerCase() === category.toLowerCase());
+        }
+        return [...INITIAL_PRODUCTS];
+      },
+      get: async (id: string): Promise<ProductItem | null> =>
+        INITIAL_PRODUCTS.find((p) => p.id === id) || null,
+    },
+    Orders: OrdersAPI,
+    MembershipSignups: MembershipSignupsAPI,
+    ContactInquiries: ContactInquiriesAPI,
     TourBooking: TourBookingAPI,
     TourBookings: TourBookingAPI,
     NewsletterSubscriber: NewsletterAPI,

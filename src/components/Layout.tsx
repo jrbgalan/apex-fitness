@@ -6,6 +6,7 @@ import Footer from './Footer';
 import Cursor from './Cursor';
 import Loader from './Loader';
 import StickyCTA from './StickyCTA';
+import CartDrawer from './shop/CartDrawer';
 import { EASE } from '@/lib/motion';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <Loader />
       <Cursor />
       <Header />
+      <CartDrawer />
       <main className="min-h-screen pb-24 md:pb-0 overflow-x-hidden">
         <AnimatePresence mode="wait" initial={false}>
           <motion.div

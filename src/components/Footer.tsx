@@ -13,15 +13,17 @@ const FOOTER_LINKS = [
       { label: 'Classes', to: '/classes' },
       { label: 'Trainers', to: '/trainers' },
       { label: 'Membership', to: '/membership' },
-      { label: 'Facilities', to: '/facilities' },
+      { label: 'Locations', to: '/locations' },
+      { label: 'Shop', to: '/shop' },
     ],
   },
   {
     title: 'Club',
     items: [
+      { label: 'Facilities', to: '/facilities' },
       { label: 'About', to: '/about' },
+      { label: 'Contact', to: '/contact' },
       { label: 'Book a Tour', to: '/book-tour' },
-      { label: 'Home', to: '/' },
     ],
   },
 ];
@@ -58,7 +60,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-background border-t border-border" role="contentinfo">
-      <div className="px-6 md:px-12 py-20 md:py-28">
+      <div className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
           {/* Brand + newsletter */}
           <motion.div
@@ -138,7 +140,12 @@ export default function Footer() {
         </div>
 
         <div className="mt-20 pt-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <p className="font-heading text-2xl tracking-[0.2em] text-foreground">APEX</p>
+          <div>
+            <p className="font-heading text-2xl tracking-[0.2em] text-foreground">APEX</p>
+            <p className="text-[0.65rem] text-muted-foreground mt-1">
+              Photographs courtesy of featured creators on Unsplash.
+            </p>
+          </div>
           <p className="text-[0.65rem] uppercase tracking-label text-foreground/60">
             © {new Date().getFullYear()} John Romeo Galan
           </p>

@@ -7,17 +7,10 @@ import PageTransition from '@/components/PageTransition';
 import SectionHeading from '@/components/SectionHeading';
 import { fadeUp, stagger, viewportOnce } from '@/lib/motion';
 import { cn } from '@/lib/utils';
+import { INITIAL_FACILITY_PHOTOS } from '@/data/mockData';
+import { FacilityPhoto } from '@/types';
 
 const Lightbox = dynamic(() => import('@/components/Lightbox'), { ssr: false });
-
-const GALLERY = [
-  { src: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1200&auto=format&fit=crop', alt: 'Main strength conditioning floor and Olympic platforms' },
-  { src: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop', alt: 'Free weights arena and power racks' },
-  { src: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=1200&auto=format&fit=crop', alt: 'Cardio endurance and conditioning section' },
-  { src: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop', alt: 'Specialized isolation machinery and resistance racks' },
-  { src: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200&auto=format&fit=crop', alt: 'Mobility and mind-body movement studio' },
-  { src: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=1200&auto=format&fit=crop', alt: 'Combat arts sparring ring and training bags' },
-];
 
 const AMENITIES = [
   'Strength floor', 'Cardio studio', 'Cycling room', 'Boxing ring',
@@ -33,22 +26,22 @@ const HOURS = [
 ];
 
 export default function Facilities() {
-  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
+  const [lightbox, setLightbox] = useState<FacilityPhoto | null>(null);
 
   return (
     <PageTransition>
       <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12">
         <SectionHeading
-          label="The space"
+          label="The Space"
           title="A room with intent."
-          intro="Every square foot earns its place. Nothing decorative, nothing wasted."
+          intro="12 curated facility viewpoints. Every square foot earns its place. Nothing decorative, nothing wasted."
         />
       </section>
 
-      {/* Gallery */}
+      {/* Gallery (12+ photos with lightbox) */}
       <section className="px-6 md:px-12 pb-24">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {GALLERY.map((item, i) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {INITIAL_FACILITY_PHOTOS.map((item, i) => (
             <motion.button
               key={item.src}
               variants={fadeUp}
@@ -58,18 +51,26 @@ export default function Facilities() {
               onClick={() => setLightbox(item)}
               aria-label={`Enlarge photo: ${item.alt}`}
               className={cn(
-                'group relative overflow-hidden bg-card border border-border/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
-                i === 0 ? 'md:col-span-2 md:row-span-2 aspect-square md:aspect-auto' : 'aspect-square'
+                'group relative overflow-hidden bg-card border border-border/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none aspect-[4/3] text-left',
+                i === 0 ? 'md:col-span-2 md:row-span-2 aspect-square md:aspect-auto' : ''
               )}
             >
               <Image
                 src={item.src}
                 alt={item.alt}
                 fittingType="fill"
-                sizes={i === 0 ? '(max-width: 768px) 100vw, 66vw' : '(max-width: 768px) 50vw, 33vw'}
+                sizes={i === 0 ? '(max-width: 768px) 100vw, 66vw' : '(max-width: 768px) 50vw, 25vw'}
                 className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-background/25 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
+              
+              {/* Photo Caption Badge */}
+              <div className="absolute bottom-2 left-2 right-2 p-2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <p className="text-[0.62rem] text-foreground font-medium line-clamp-1">{item.alt}</p>
+                {item.credit && (
+                  <p className="text-[0.55rem] text-primary font-mono">{item.credit}</p>
+                )}
+              </div>
             </motion.button>
           ))}
         </div>
@@ -118,16 +119,14 @@ export default function Facilities() {
             9th Avenue, Bonifacio Global District<br />
             Taguig, Metro Manila
           </p>
-          <div className="mt-8 aspect-[4/3] bg-card border border-border/60 flex items-center justify-center text-foreground/60 text-xs sm:text-sm tracking-widest uppercase">
-            Map · 14.5547° N, 121.0504° E
-          </div>
         </div>
       </section>
 
-      {/* Dynamic Lightbox */}
+      {/* Lightbox with photographer credit */}
       <Lightbox
         src={lightbox?.src || null}
         alt={lightbox?.alt}
+        credit={lightbox?.credit}
         onClose={() => setLightbox(null)}
       />
     </PageTransition>

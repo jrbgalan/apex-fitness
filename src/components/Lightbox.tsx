@@ -8,10 +8,11 @@ import { EASE } from '@/lib/motion';
 export interface LightboxProps {
   src: string | null;
   alt?: string;
+  credit?: string;
   onClose: () => void;
 }
 
-export default function Lightbox({ src, alt, onClose }: LightboxProps) {
+export default function Lightbox({ src, alt, credit, onClose }: LightboxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -71,7 +72,7 @@ export default function Lightbox({ src, alt, onClose }: LightboxProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[80] bg-background/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 md:p-10"
+          className="fixed inset-0 z-[80] bg-background/95 backdrop-blur-md flex flex-col items-center justify-center p-4 sm:p-6 md:p-10"
           onClick={onClose}
         >
           <button
@@ -81,12 +82,13 @@ export default function Lightbox({ src, alt, onClose }: LightboxProps) {
           >
             <X className="w-6 h-6" />
           </button>
+          
           <motion.div
             initial={{ scale: 0.94, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.94, opacity: 0 }}
             transition={{ duration: 0.4, ease: EASE }}
-            className="relative max-w-5xl w-full max-h-[85vh] h-[75vh] flex items-center justify-center"
+            className="relative max-w-5xl w-full max-h-[80vh] h-[70vh] flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -98,9 +100,18 @@ export default function Lightbox({ src, alt, onClose }: LightboxProps) {
               priority={true}
             />
           </motion.div>
+
+          {/* Caption & Unsplash credit */}
+          <div className="mt-4 text-center z-10 space-y-1">
+            {alt && <p className="text-sm text-foreground/90 font-medium">{alt}</p>}
+            {credit && (
+              <p className="text-xs text-primary/80 font-mono tracking-wider">
+                {credit}
+              </p>
+            )}
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
-

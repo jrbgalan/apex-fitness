@@ -9,10 +9,15 @@ import Hero from '@/components/home/Hero';
 import SectionHeading from '@/components/SectionHeading';
 import ClassCard from '@/components/ClassCard';
 import TrainerCard from '@/components/TrainerCard';
+import PricingCard from '@/components/PricingCard';
+import ProductCard from '@/components/shop/ProductCard';
+import ProductDetailDrawer from '@/components/shop/ProductDetailDrawer';
+import MembershipSignupModal from '@/components/membership/MembershipSignupModal';
 import Marquee from '@/components/Marquee';
 import CountUp from '@/components/CountUp';
 import { fadeUp, stagger, viewportOnce, EASE } from '@/lib/motion';
-import { ClassItem, TrainerItem } from '@/types';
+import { cn } from '@/lib/utils';
+import { ClassItem, TrainerItem, MembershipPlanItem, ProductItem } from '@/types';
 
 const FACILITIES_IMG = 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1400&auto=format&fit=crop';
 const HERO_IMG = 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1400&auto=format&fit=crop';
@@ -20,7 +25,7 @@ const HERO_IMG = 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q
 const STATS = [
   { value: 12, suffix: '', label: 'Specialist coaches' },
   { value: 40, suffix: '+', label: 'Weekly classes' },
-  { value: 6000, suffix: '', label: 'Square feet' },
+  { value: 5, suffix: '', label: 'Prime clubhouses' },
   { value: 24, suffix: '/7', label: 'Member access' },
 ];
 
@@ -33,20 +38,43 @@ const TESTIMONIALS = [
 export default function Home() {
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [trainers, setTrainers] = useState<TrainerItem[]>([]);
+  const [plans, setPlans] = useState<MembershipPlanItem[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [annual, setAnnual] = useState(false);
+
+  // Modals & drawers
+  const [selectedPlan, setSelectedPlan] = useState<MembershipPlanItem | null>(null);
+  const [signupModalOpen, setSignupModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [productDrawerOpen, setProductDrawerOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([
-      api.entities.Class.list(),
-      api.entities.Trainer.list('order', 6),
+      api.entities.Classes.list(),
+      api.entities.Trainers.list('order', 6),
+      api.entities.MembershipPlans.list('order', 4),
+      api.entities.Products.list(),
     ])
-      .then(([classList, trainerList]) => {
+      .then(([classList, trainerList, planList, productList]) => {
         setClasses(classList || []);
         setTrainers(trainerList || []);
+        setPlans(planList || []);
+        setFeaturedProducts((productList || []).slice(0, 4));
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const handleOpenSignup = (plan: MembershipPlanItem) => {
+    setSelectedPlan(plan);
+    setSignupModalOpen(true);
+  };
+
+  const handleOpenProductDetail = (p: ProductItem) => {
+    setSelectedProduct(p);
+    setProductDrawerOpen(true);
+  };
 
   return (
     <>
@@ -83,7 +111,7 @@ export default function Home() {
         <SectionHeading
           label="The space"
           title="Built for the work."
-          intro="Six thousand square feet of concrete, steel, and silence. Every surface chosen for a reason."
+          intro="Architectural sanctuaries of concrete, steel, and acoustic silence. Every surface chosen for purpose."
         />
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {[HERO_IMG, FACILITIES_IMG].map((img, i) => (
@@ -113,27 +141,28 @@ export default function Home() {
 
       {/* Class categories carousel */}
       <section className="py-20 md:py-32 overflow-hidden border-t border-border/60">
-        <div className="px-6 md:px-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+        <div className="px-6 md:px-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 max-w-7xl mx-auto">
           <SectionHeading label="The program" title="Classes, choreographed." />
           <Link
             to="/classes"
             className="inline-flex items-center gap-2 min-h-[44px] text-[0.7rem] uppercase tracking-label text-primary hover:text-foreground transition-colors group select-none"
           >
-            All classes
+            All 16+ classes
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" />
           </Link>
         </div>
-        <div className="mt-12 flex gap-6 overflow-x-auto no-scrollbar snap-x-mandatory px-6 md:px-12 pb-4 touch-pan-x">
+        <div className="mt-12 flex gap-6 overflow-x-auto no-scrollbar snap-x-mandatory px-6 md:px-12 pb-4 touch-pan-x max-w-7xl mx-auto">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="min-w-[280px] sm:min-w-[320px] md:min-w-[340px] border-t border-border/60 pt-6 pb-8 space-y-4 animate-pulse shrink-0">
-                <div className="h-3 w-16 bg-muted rounded" />
-                <div className="h-7 w-48 bg-muted rounded" />
-                <div className="h-10 w-full bg-muted/60 rounded" />
+              <div key={i} className="min-w-[280px] sm:min-w-[320px] md:min-w-[340px] border border-border/60 p-6 space-y-4 animate-pulse shrink-0 bg-card">
+                <div className="aspect-[16/10] bg-muted/60" />
+                <div className="h-4 w-20 bg-muted" />
+                <div className="h-7 w-48 bg-muted" />
+                <div className="h-10 w-full bg-muted/60" />
               </div>
             ))
           ) : (
-            classes.map((c) => (
+            classes.slice(0, 6).map((c) => (
               <Link
                 key={c.id}
                 to="/classes"
@@ -147,7 +176,7 @@ export default function Home() {
       </section>
 
       {/* Trainer highlights */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl mx-auto">
         <SectionHeading
           label="The people"
           title="Coaches, not instructors."
@@ -180,8 +209,122 @@ export default function Home() {
         </div>
       </section>
 
+      {/* MEMBERSHIP TEASER (4 TIERS + TOGGLE + ELITE SPOTLIGHT) */}
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 bg-card/25">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <SectionHeading
+              label="Membership"
+              title="Four tiers. One standard."
+              intro="Transparent admissions. Select your tier below, or explore our full matrix comparison."
+            />
+            {/* Toggle */}
+            <div className="flex flex-col sm:items-end gap-2">
+              <div className="inline-flex border border-border/80 p-1 bg-card rounded-none">
+                <button
+                  onClick={() => setAnnual(false)}
+                  className={cn(
+                    'min-h-[44px] px-5 py-2 text-[0.68rem] uppercase tracking-ultra transition-all select-none',
+                    !annual ? 'bg-primary text-primary-foreground font-semibold' : 'text-foreground/60 hover:text-foreground'
+                  )}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setAnnual(true)}
+                  className={cn(
+                    'min-h-[44px] px-5 py-2 text-[0.68rem] uppercase tracking-ultra transition-all select-none gap-1.5 flex items-center',
+                    annual ? 'bg-primary text-primary-foreground font-semibold' : 'text-foreground/60 hover:text-foreground'
+                  )}
+                >
+                  <span>Annual</span>
+                  <span className="text-[0.58rem] bg-background/20 px-1 py-0.5 font-mono">~20% OFF</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing cards flex/grid */}
+          <div className="mt-12">
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="border border-border/60 bg-card/40 p-8 space-y-4 animate-pulse">
+                    <div className="h-4 w-20 bg-muted" />
+                    <div className="h-8 w-32 bg-muted" />
+                    <div className="h-10 w-24 bg-muted/60" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col lg:grid lg:grid-cols-4 gap-6 lg:gap-4 items-stretch">
+                {plans.map((p, idx) => (
+                  <PricingCard
+                    key={p.id}
+                    plan={p}
+                    annual={annual}
+                    index={idx}
+                    onSelect={handleOpenSignup}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link
+              to="/membership"
+              className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-primary hover:text-foreground transition-colors group font-medium min-h-[44px]"
+            >
+              <span>View Full Feature Comparison Table & FAQ</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURED PRODUCTS STRIP */}
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+          <SectionHeading
+            label="The Pro Shop"
+            title="Apparel, supplements, and tech."
+            intro="Studio-grade equipment, certified sports nutrition, and high-performance training wear."
+          />
+          <Link
+            to="/shop"
+            className="inline-flex items-center gap-2 min-h-[44px] text-[0.7rem] uppercase tracking-label text-primary hover:text-foreground transition-colors group select-none"
+          >
+            Explore all products
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" />
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="border border-border/60 bg-card/40 p-4 space-y-4 animate-pulse">
+                <div className="aspect-[3/4] bg-muted/60" />
+                <div className="h-4 w-20 bg-muted" />
+                <div className="h-6 w-36 bg-muted" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredProducts.map((p) => (
+              <ProductCard
+                key={p.id}
+                product={p}
+                onOpenDetail={handleOpenProductDetail}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Stats strip */}
-      <section className="border-y border-border/60 px-6 md:px-12 py-16 md:py-24">
+      <section className="border-y border-border/60 px-6 md:px-12 py-16 md:py-24 max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
           {STATS.map((s) => (
             <motion.div
@@ -204,7 +347,7 @@ export default function Home() {
       {/* Testimonials */}
       <section className="py-20 md:py-32">
         <Marquee items={['Discipline', 'Strength', 'Precision', 'Recovery', 'Standard', 'Apex']} />
-        <div className="mt-16 px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div className="mt-16 px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-7xl mx-auto">
           {TESTIMONIALS.map((t, i) => (
             <motion.blockquote
               key={i}
@@ -259,6 +402,21 @@ export default function Home() {
           </motion.div>
         </motion.div>
       </section>
+
+      {/* Membership Signup Modal */}
+      <MembershipSignupModal
+        open={signupModalOpen}
+        onClose={() => setSignupModalOpen(false)}
+        selectedPlan={selectedPlan}
+        billingCycle={annual ? 'annual' : 'monthly'}
+      />
+
+      {/* Product Detail Drawer */}
+      <ProductDetailDrawer
+        product={selectedProduct}
+        open={productDrawerOpen}
+        onClose={() => setProductDrawerOpen(false)}
+      />
     </>
   );
 }
