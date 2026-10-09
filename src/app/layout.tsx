@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display, Cormorant_Garamond } from 'next/font/google';
 import '@/index.css';
 import 'leaflet/dist/leaflet.css';
@@ -26,6 +26,12 @@ const cormorant = Cormorant_Garamond({
   variable: '--font-serif',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#0a0a0a',
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://apexfitness.com'),
   title: {
@@ -36,6 +42,9 @@ export const metadata: Metadata = {
   keywords: ['fitness', 'gym', 'private members club', 'manila', 'strength training', 'recovery', 'wellness'],
   authors: [{ name: 'John Romeo Galan' }],
   creator: 'John Romeo Galan',
+  alternates: {
+    canonical: './',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_PH',
@@ -60,6 +69,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>▲</text></svg>",
+    apple: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a0a0a'/><text y='.78em' x='50%' text-anchor='middle' font-size='65' fill='%23d4af37'>▲</text></svg>",
   },
 };
 

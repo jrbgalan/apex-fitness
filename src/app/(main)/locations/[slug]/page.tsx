@@ -28,6 +28,46 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function LocationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  return <LocationDetail slug={slug} />;
+  const location = INITIAL_LOCATIONS.find((l) => l.slug === slug || l.id === slug);
+
+  const locationJsonLd = location
+    ? {
+        '@context': 'https://schema.org',
+        '@type': ['HealthClub', 'SportsActivityLocation', 'LocalBusiness'],
+        name: `${location.name} · Apex Fitness Gym`,
+        description: location.description,
+        image: location.photo,
+        telephone: location.phone || '+63-2-8888-2739',
+        priceRange: '$$$$',
+        address: {
+          '@type': 'PostalAddress',
+          streetAddress: location.address,
+          addressLocality: location.city,
+          addressCountry: 'PH',
+        },
+        geo: {
+          '@type': 'GeoCoordinates',
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+        amenityFeature: location.amenities?.map((a) => ({
+          '@type': 'LocationFeatureSpecification',
+          name: a,
+          value: true,
+        })),
+      }
+    : null;
+
+  return (
+    <>
+      {locationJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(locationJsonLd) }}
+        />
+      )}
+      <LocationDetail slug={slug} />
+    </>
+  );
 }
 

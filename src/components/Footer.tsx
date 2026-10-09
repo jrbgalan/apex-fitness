@@ -146,9 +146,17 @@ export default function Footer() {
               Photographs courtesy of featured creators on Unsplash.
             </p>
           </div>
-          <p className="text-[0.65rem] uppercase tracking-label text-foreground/60">
-            © {new Date().getFullYear()} John Romeo Galan
-          </p>
+          <div className="flex items-center gap-6">
+            <Link
+              to="/admin"
+              className="text-[0.65rem] uppercase tracking-label text-foreground/40 hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Admin
+            </Link>
+            <p className="text-[0.65rem] uppercase tracking-label text-foreground/60">
+              © {new Date().getFullYear()} John Romeo Galan
+            </p>
+          </div>
         </div>
       </div>
     </footer>

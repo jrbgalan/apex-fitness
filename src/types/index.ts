@@ -123,7 +123,8 @@ export interface ProductItem {
   hover_image?: string;
   gallery?: string[];
   stock: number;
-  rating: number;
+  stock_quantity?: number;
+  rating?: number;
   badge?: 'New' | 'Best Seller';
   sizes?: string[];
   flavors?: string[];
