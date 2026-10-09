@@ -268,6 +268,7 @@ export default function LocationsMap({
   }, [activeLocation]);
 
   const activeLayer = MAP_LAYERS[layerType];
+  const hoursStatus = activeLocation ? getLocationHoursStatus(activeLocation) : null;
 
   return (
     <div
@@ -476,6 +477,90 @@ export default function LocationsMap({
           </div>
         )}
       </div>
+
+      {/* 3. BOTTOM DOCKED CLUB PREVIEW & DETAILS CARD */}
+      {!isCompact && activeLocation && (
+        <div className="p-3.5 sm:p-4 bg-[#0e0e0e]/95 border-t border-border/80 backdrop-blur-md z-20">
+          {/* Multi-location selector pills */}
+          {locations.length > 1 && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2.5 scrollbar-none text-[0.68rem]">
+              <span className="text-[0.62rem] uppercase tracking-ultra font-mono text-muted-foreground shrink-0 mr-1 flex items-center gap-1">
+                <Compass className="w-3 h-3 text-primary" /> Clubs:
+              </span>
+              {locations.map((loc) => {
+                const isSelected = loc.id === activeLocation.id;
+                return (
+                  <button
+                    key={loc.id}
+                    type="button"
+                    onClick={() => onSelectLocation(loc.id)}
+                    className={cn(
+                      'px-2.5 py-1 rounded-md shrink-0 transition-all font-mono',
+                      isSelected
+                        ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
+                        : 'bg-card/70 hover:bg-card border border-border/60 text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    {loc.neighborhood || loc.city}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Active Club Details, Description, and Navigation Links */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div className="space-y-1.5 min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h4 className="font-heading text-base sm:text-lg font-semibold text-foreground truncate">
+                  {activeLocation.name}
+                </h4>
+                <span className="text-[0.62rem] uppercase tracking-ultra px-2 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary font-mono shrink-0">
+                  {activeLocation.neighborhood || activeLocation.city}
+                </span>
+                {hoursStatus && (
+                  <span className="text-[0.68rem] text-primary/90 font-mono flex items-center gap-1.5 shrink-0">
+                    <Clock className="w-3 h-3 text-primary shrink-0" />
+                    <span>{hoursStatus.statusText}</span>
+                  </span>
+                )}
+              </div>
+
+              <p className="text-xs text-muted-foreground truncate flex items-center gap-1.5">
+                <MapPin className="w-3 h-3 text-primary shrink-0" />
+                <span>{activeLocation.address}</span>
+              </p>
+
+              {activeLocation.description && (
+                <p className="text-xs text-foreground/75 line-clamp-2 leading-relaxed pt-0.5">
+                  {activeLocation.description}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0">
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-2 rounded-lg bg-secondary hover:bg-secondary/80 border border-border/80 text-[0.68rem] uppercase font-mono tracking-wider text-foreground flex items-center gap-1.5 transition-colors min-h-[38px]"
+                title="Get Directions in Google Maps"
+              >
+                <Navigation className="w-3.5 h-3.5 text-primary" />
+                <span>Get Directions</span>
+              </a>
+
+              <Link
+                to={`/locations/${activeLocation.slug}`}
+                className="px-3.5 py-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-[0.68rem] uppercase font-mono tracking-wider font-semibold flex items-center gap-1.5 transition-colors min-h-[38px]"
+              >
+                <span>View Club</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
