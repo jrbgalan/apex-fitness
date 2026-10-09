@@ -11,6 +11,21 @@ export interface LinkProps extends Omit<React.AnchorHTMLAttributes<HTMLAnchorEle
 
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>(({ to, href, children, ...props }, ref) => {
   const destination = href || to || '/';
+  const isExternal =
+    typeof destination === 'string' &&
+    (destination.startsWith('http://') ||
+      destination.startsWith('https://') ||
+      destination.startsWith('mailto:') ||
+      destination.startsWith('tel:'));
+
+  if (isExternal) {
+    return (
+      <a ref={ref} href={destination} target="_blank" rel="noopener noreferrer" {...props}>
+        {children}
+      </a>
+    );
+  }
+
   return (
     <NextLink ref={ref} href={destination} {...props}>
       {children}
