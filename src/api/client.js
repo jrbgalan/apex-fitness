@@ -18,14 +18,62 @@ const setStorage = (key, value) => {
   } catch {}
 };
 
+const TourBookingAPI = {
+  create: async (data) => {
+    await new Promise((r) => setTimeout(r, 450));
+    if (!data.name || !data.email || !data.preferred_date) {
+      throw new Error('Please fill in your name, email, and preferred date.');
+    }
+    const bookings = getStorage('apex_tour_bookings', []);
+    const newBooking = {
+      id: `tour-${Date.now()}`,
+      ...data,
+      status: 'confirmed',
+      created_at: new Date().toISOString(),
+    };
+    setStorage('apex_tour_bookings', [...bookings, newBooking]);
+    return newBooking;
+  },
+  list: async () => {
+    return getStorage('apex_tour_bookings', []);
+  },
+};
+
+const NewsletterAPI = {
+  create: async ({ email }) => {
+    await new Promise((r) => setTimeout(r, 350));
+    if (!email || !email.includes('@')) {
+      throw new Error('Please enter a valid email address.');
+    }
+    const subs = getStorage('apex_newsletter_subscribers', []);
+    const normalized = email.trim().toLowerCase();
+    const exists = subs.some((s) => s.email && s.email.toLowerCase() === normalized);
+    if (exists) {
+      throw new Error('This email is already subscribed to the Apex journal.');
+    }
+    const newSub = {
+      id: `sub-${Date.now()}`,
+      email: normalized,
+      created_at: new Date().toISOString(),
+    };
+    setStorage('apex_newsletter_subscribers', [...subs, newSub]);
+    return newSub;
+  },
+  list: async () => getStorage('apex_newsletter_subscribers', []),
+};
+
 export const api = {
   entities: {
     Class: {
-      list: async () => [...INITIAL_CLASSES],
+      list: async () => {
+        await new Promise((r) => setTimeout(r, 200));
+        return [...INITIAL_CLASSES];
+      },
       get: async (id) => INITIAL_CLASSES.find((c) => c.id === id) || null,
     },
     Trainer: {
       list: async (sortBy = 'order', limit = 10) => {
+        await new Promise((r) => setTimeout(r, 200));
         let res = [...INITIAL_TRAINERS];
         if (sortBy === 'order') res.sort((a, b) => a.order - b.order);
         return res.slice(0, limit);
@@ -34,6 +82,7 @@ export const api = {
     },
     MembershipPlan: {
       list: async (sortBy = 'order', limit = 10) => {
+        await new Promise((r) => setTimeout(r, 200));
         let res = [...INITIAL_PLANS];
         if (sortBy === 'order') res.sort((a, b) => a.order - b.order);
         return res.slice(0, limit);
@@ -41,32 +90,15 @@ export const api = {
       get: async (id) => INITIAL_PLANS.find((p) => p.id === id) || null,
     },
     ScheduleSlot: {
-      list: async () => [...INITIAL_SCHEDULE_SLOTS],
-    },
-    TourBooking: {
-      create: async (data) => {
-        const bookings = getStorage('apex_tour_bookings', []);
-        const newBooking = { id: `tour-${Date.now()}`, ...data, created_at: new Date().toISOString() };
-        setStorage('apex_tour_bookings', [...bookings, newBooking]);
-        return newBooking;
+      list: async () => {
+        await new Promise((r) => setTimeout(r, 200));
+        return [...INITIAL_SCHEDULE_SLOTS];
       },
     },
-    NewsletterSubscriber: {
-      create: async (data) => {
-        const subs = getStorage('apex_newsletter_subscribers', []);
-        const newSub = { id: `sub-${Date.now()}`, ...data, created_at: new Date().toISOString() };
-        setStorage('apex_newsletter_subscribers', [...subs, newSub]);
-        return newSub;
-      },
-    },
-    NewsletterSubscribers: {
-      create: async (data) => {
-        const subs = getStorage('apex_newsletter_subscribers', []);
-        const newSub = { id: `sub-${Date.now()}`, ...data, created_at: new Date().toISOString() };
-        setStorage('apex_newsletter_subscribers', [...subs, newSub]);
-        return newSub;
-      },
-    },
+    TourBooking: TourBookingAPI,
+    TourBookings: TourBookingAPI,
+    NewsletterSubscriber: NewsletterAPI,
+    NewsletterSubscribers: NewsletterAPI,
   },
   app: {
     getPublicSettings: async () => ({

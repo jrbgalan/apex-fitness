@@ -34,17 +34,18 @@ export default function Footer() {
 
   const subscribe = async (e) => {
     e.preventDefault();
+    if (loading) return;
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-      toast.error('Please enter a valid email.');
+      toast.error('Please enter a valid email address.');
       return;
     }
     setLoading(true);
     try {
       await api.entities.NewsletterSubscribers.create({ email });
-      toast.success('Welcome to Apex. Check your inbox.');
+      toast.success('Welcome to Apex. Check your inbox for confirmation.');
       setEmail('');
-    } catch {
-      toast.error('Something went wrong. Try again.');
+    } catch (err) {
+      toast.error(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -65,8 +66,8 @@ export default function Footer() {
             <motion.h3 variants={fadeUp} className="font-heading text-3xl md:text-4xl text-foreground leading-tight">
               Join the inner circle.
             </motion.h3>
-            <motion.p variants={fadeUp} className="mt-4 text-foreground/60 max-w-md leading-relaxed">
-              Early access to new programs, private events, and members-only content. No noise — only signal.
+            <motion.p variants={fadeUp} className="mt-4 text-foreground/60 max-w-[50ch] leading-relaxed">
+              Early access to new programs, private events, and members-only briefings. No noise — only signal.
             </motion.p>
             <motion.form variants={fadeUp} onSubmit={subscribe} className="mt-8 flex max-w-md border-b border-border focus-within:border-primary transition-colors">
               <input
@@ -75,14 +76,15 @@ export default function Footer() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Your email address"
                 aria-label="Email address"
-                className="flex-1 bg-transparent py-4 text-foreground placeholder:text-foreground/40 outline-none"
+                disabled={loading}
+                className="flex-1 bg-transparent py-4 text-foreground placeholder:text-foreground/40 outline-none text-sm"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="text-[0.7rem] uppercase tracking-label text-primary hover:text-foreground transition-colors px-2 disabled:opacity-50"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[0.7rem] uppercase tracking-label text-primary hover:text-foreground transition-colors px-3 disabled:opacity-50 select-none"
               >
-                {loading ? 'Joining' : 'Subscribe'}
+                {loading ? 'Joining…' : 'Subscribe'}
               </button>
             </motion.form>
           </motion.div>
@@ -90,13 +92,16 @@ export default function Footer() {
           {/* Link columns */}
           {FOOTER_LINKS.map((col) => (
             <div key={col.title} className="md:col-span-2">
-              <p className="text-[0.65rem] uppercase tracking-label text-primary mb-6">{col.title}</p>
-              <ul className="space-y-4">
+              <p className="text-[0.65rem] uppercase tracking-ultra text-primary mb-6">{col.title}</p>
+              <ul className="space-y-3">
                 {col.items.map((item) => (
                   <li key={item.to}>
-                    <Link to={item.to} className="group relative text-foreground/70 hover:text-foreground transition-colors">
+                    <Link
+                      to={item.to}
+                      className="group relative inline-flex items-center min-h-[36px] text-sm text-foreground/70 hover:text-foreground transition-colors"
+                    >
                       {item.label}
-                      <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary group-hover:w-full transition-all duration-500" />
+                      <span className="absolute bottom-1 left-0 h-px w-0 bg-primary group-hover:w-full transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]" />
                     </Link>
                   </li>
                 ))}
@@ -106,13 +111,16 @@ export default function Footer() {
 
           {/* Socials */}
           <div className="md:col-span-3">
-            <p className="text-[0.65rem] uppercase tracking-label text-primary mb-6">Follow</p>
-            <ul className="space-y-4">
+            <p className="text-[0.65rem] uppercase tracking-ultra text-primary mb-6">Follow</p>
+            <ul className="space-y-3">
               {SOCIALS.map((s) => (
                 <li key={s}>
-                  <a href="#" className="group relative text-foreground/70 hover:text-foreground transition-colors">
+                  <a
+                    href="#"
+                    className="group relative inline-flex items-center min-h-[36px] text-sm text-foreground/70 hover:text-foreground transition-colors"
+                  >
                     {s}
-                    <span className="absolute -bottom-0.5 left-0 h-px w-0 bg-primary group-hover:w-full transition-all duration-500" />
+                    <span className="absolute bottom-1 left-0 h-px w-0 bg-primary group-hover:w-full transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]" />
                   </a>
                 </li>
               ))}

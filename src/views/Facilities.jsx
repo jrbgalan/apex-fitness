@@ -55,7 +55,7 @@ export default function Facilities() {
               viewport={viewportOnce}
               onClick={() => setLightbox(img)}
               className={cn(
-                'group relative overflow-hidden',
+                'group relative overflow-hidden bg-card border border-border/40 focus:outline-none focus:ring-1 focus:ring-primary',
                 i === 0 ? 'md:col-span-2 md:row-span-2 aspect-square md:aspect-auto' : 'aspect-square'
               )}
             >
@@ -63,58 +63,58 @@ export default function Facilities() {
                 src={img}
                 alt={`Apex facility ${i + 1}`}
                 fittingType="fill"
-                className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-background/20 group-hover:bg-transparent transition-colors" />
+              <div className="absolute inset-0 bg-background/25 group-hover:bg-transparent transition-colors duration-500" />
             </motion.button>
           ))}
         </div>
       </section>
 
       {/* Amenities */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60">
         <SectionHeading label="Included" title="The amenities." />
         <motion.div
-          variants={stagger(0.05)}
+          variants={stagger(0.04)}
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-x-8 border-t border-border"
+          className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-x-8 border-t border-border/60"
         >
           {AMENITIES.map((a) => (
             <motion.div
               key={a}
               variants={fadeUp}
-              className="flex items-center gap-3 border-b border-border py-4"
+              className="flex items-center gap-3 border-b border-border/60 py-4 min-h-[44px]"
             >
-              <span className="w-1 h-1 rounded-full bg-primary" />
-              <span className="text-foreground/80">{a}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+              <span className="text-foreground/80 text-sm sm:text-base">{a}</span>
             </motion.div>
           ))}
         </motion.div>
       </section>
 
       {/* Hours + location */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 grid grid-cols-1 md:grid-cols-2 gap-12">
         <div>
           <SectionHeading label="Visit" title="Hours." />
-          <div className="mt-8 border-t border-border">
+          <div className="mt-8 border-t border-border/60">
             {HOURS.map((h) => (
-              <div key={h.day} className="flex justify-between border-b border-border py-4">
+              <div key={h.day} className="flex justify-between border-b border-border/60 py-4 text-sm sm:text-base">
                 <span className="text-foreground/70">{h.day}</span>
-                <span className="text-foreground">{h.time}</span>
+                <span className="text-foreground font-medium">{h.time}</span>
               </div>
             ))}
           </div>
         </div>
         <div>
           <SectionHeading label="Find us" title="The address." />
-          <p className="mt-8 text-foreground/70 leading-relaxed">
+          <p className="mt-8 text-foreground/70 leading-relaxed text-sm sm:text-base max-w-[50ch]">
             8F, The Apex Building<br />
             9th Avenue, Bonifacio Global District<br />
             Taguig, Metro Manila
           </p>
-          <div className="mt-8 aspect-[4/3] bg-card border border-border flex items-center justify-center text-foreground/40 text-sm">
+          <div className="mt-8 aspect-[4/3] bg-card border border-border/60 flex items-center justify-center text-foreground/45 text-xs sm:text-sm tracking-widest uppercase">
             Map · 14.5547° N, 121.0504° E
           </div>
         </div>
@@ -127,26 +127,26 @@ export default function Facilities() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] bg-background/95 flex items-center justify-center p-6"
+            className="fixed inset-0 z-[80] bg-background/95 backdrop-blur-md flex items-center justify-center p-6"
             onClick={() => setLightbox(null)}
           >
             <button
-              className="absolute top-6 right-6 p-2 text-foreground/60 hover:text-primary"
+              className="absolute top-6 right-6 min-h-[44px] min-w-[44px] flex items-center justify-center p-2 text-foreground/70 hover:text-primary transition-colors"
               aria-label="Close"
             >
               <X className="w-6 h-6" />
             </button>
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.94, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              exit={{ scale: 0.94, opacity: 0 }}
               transition={{ duration: 0.4, ease: EASE }}
               className="max-w-5xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
                 src={lightbox}
-                alt="Apex facility"
+                alt="Apex facility view"
                 fittingType="fit"
                 className="w-full max-h-[85vh] object-contain"
               />

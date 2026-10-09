@@ -113,6 +113,29 @@
   .snap-center-item {
     scroll-snap-align: center;
   }
+  .draw-underline {
+    position: relative;
+  }
+  .draw-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0%;
+    height: 1px;
+    background-color: hsl(var(--primary));
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .draw-underline:hover::after,
+  .group:hover .draw-underline::after {
+    width: 100%;
+  }
+  .img-premium-hover {
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .img-premium-hover {
+    transform: scale(1.05);
+  }
 }
 
 @keyframes kenburns {
