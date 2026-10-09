@@ -26,6 +26,8 @@ export default function Hero() {
           src={HERO_IMG}
           alt="The Apex training floor at night, lit by a single warm light"
           fittingType="fill"
+          priority={true}
+          sizes="100vw"
           className="w-full h-full object-cover animate-kenburns"
         />
         <div className="absolute inset-0 bg-background/55" />

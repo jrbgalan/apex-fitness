@@ -1,20 +1,22 @@
 'use client';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import PageTransition from '@/components/PageTransition';
 import SectionHeading from '@/components/SectionHeading';
-import { fadeUp, stagger, viewportOnce, EASE } from '@/lib/motion';
+import { fadeUp, stagger, viewportOnce } from '@/lib/motion';
 import { cn } from '@/lib/utils';
 
+const Lightbox = dynamic(() => import('@/components/Lightbox'), { ssr: false });
+
 const GALLERY = [
-  'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=1200&auto=format&fit=crop',
+  { src: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1200&auto=format&fit=crop', alt: 'Main strength conditioning floor and Olympic platforms' },
+  { src: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop', alt: 'Free weights arena and power racks' },
+  { src: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=1200&auto=format&fit=crop', alt: 'Cardio endurance and conditioning section' },
+  { src: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop', alt: 'Specialized isolation machinery and resistance racks' },
+  { src: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?q=80&w=1200&auto=format&fit=crop', alt: 'Mobility and mind-body movement studio' },
+  { src: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?q=80&w=1200&auto=format&fit=crop', alt: 'Combat arts sparring ring and training bags' },
 ];
 
 const AMENITIES = [
@@ -31,7 +33,7 @@ const HOURS = [
 ];
 
 export default function Facilities() {
-  const [lightbox, setLightbox] = useState(null);
+  const [lightbox, setLightbox] = useState<{ src: string; alt: string } | null>(null);
 
   return (
     <PageTransition>
@@ -46,26 +48,28 @@ export default function Facilities() {
       {/* Gallery */}
       <section className="px-6 md:px-12 pb-24">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {GALLERY.map((img, i) => (
+          {GALLERY.map((item, i) => (
             <motion.button
-              key={i}
+              key={item.src}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={viewportOnce}
-              onClick={() => setLightbox(img)}
+              onClick={() => setLightbox(item)}
+              aria-label={`Enlarge photo: ${item.alt}`}
               className={cn(
-                'group relative overflow-hidden bg-card border border-border/40 focus:outline-none focus:ring-1 focus:ring-primary',
+                'group relative overflow-hidden bg-card border border-border/40 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none',
                 i === 0 ? 'md:col-span-2 md:row-span-2 aspect-square md:aspect-auto' : 'aspect-square'
               )}
             >
               <Image
-                src={img}
-                alt={`Apex facility ${i + 1}`}
+                src={item.src}
+                alt={item.alt}
                 fittingType="fill"
+                sizes={i === 0 ? '(max-width: 768px) 100vw, 66vw' : '(max-width: 768px) 50vw, 33vw'}
                 className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-background/25 group-hover:bg-transparent transition-colors duration-500" />
+              <div className="absolute inset-0 bg-background/25 group-hover:bg-transparent transition-colors duration-500 pointer-events-none" />
             </motion.button>
           ))}
         </div>
@@ -114,46 +118,18 @@ export default function Facilities() {
             9th Avenue, Bonifacio Global District<br />
             Taguig, Metro Manila
           </p>
-          <div className="mt-8 aspect-[4/3] bg-card border border-border/60 flex items-center justify-center text-foreground/45 text-xs sm:text-sm tracking-widest uppercase">
+          <div className="mt-8 aspect-[4/3] bg-card border border-border/60 flex items-center justify-center text-foreground/60 text-xs sm:text-sm tracking-widest uppercase">
             Map · 14.5547° N, 121.0504° E
           </div>
         </div>
       </section>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightbox && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[80] bg-background/95 backdrop-blur-md flex items-center justify-center p-6"
-            onClick={() => setLightbox(null)}
-          >
-            <button
-              className="absolute top-6 right-6 min-h-[44px] min-w-[44px] flex items-center justify-center p-2 text-foreground/70 hover:text-primary transition-colors"
-              aria-label="Close"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <motion.div
-              initial={{ scale: 0.94, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.94, opacity: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-              className="max-w-5xl w-full"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={lightbox}
-                alt="Apex facility view"
-                fittingType="fit"
-                className="w-full max-h-[85vh] object-contain"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Dynamic Lightbox */}
+      <Lightbox
+        src={lightbox?.src || null}
+        alt={lightbox?.alt}
+        onClose={() => setLightbox(null)}
+      />
     </PageTransition>
   );
 }

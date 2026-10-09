@@ -26,13 +26,18 @@ const FOOTER_LINKS = [
   },
 ];
 
-const SOCIALS = ['Instagram', 'TikTok', 'YouTube', 'X'];
+const SOCIALS = [
+  { name: 'Instagram', href: 'https://instagram.com' },
+  { name: 'TikTok', href: 'https://tiktok.com' },
+  { name: 'YouTube', href: 'https://youtube.com' },
+  { name: 'X', href: 'https://x.com' },
+];
 
 export default function Footer() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const subscribe = async (e) => {
+  const subscribe = async (e: any) => {
     e.preventDefault();
     if (loading) return;
     if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
@@ -44,7 +49,7 @@ export default function Footer() {
       await api.entities.NewsletterSubscribers.create({ email });
       toast.success('Welcome to Apex. Check your inbox for confirmation.');
       setEmail('');
-    } catch (err) {
+    } catch (err: any) {
       toast.error(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
@@ -52,7 +57,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-background border-t border-border">
+    <footer className="bg-background border-t border-border" role="contentinfo">
       <div className="px-6 md:px-12 py-20 md:py-28">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
           {/* Brand + newsletter */}
@@ -66,7 +71,7 @@ export default function Footer() {
             <motion.h3 variants={fadeUp} className="font-heading text-3xl md:text-4xl text-foreground leading-tight">
               Join the inner circle.
             </motion.h3>
-            <motion.p variants={fadeUp} className="mt-4 text-foreground/60 max-w-[50ch] leading-relaxed">
+            <motion.p variants={fadeUp} className="mt-4 text-foreground/70 max-w-[50ch] leading-relaxed">
               Early access to new programs, private events, and members-only briefings. No noise — only signal.
             </motion.p>
             <motion.form variants={fadeUp} onSubmit={subscribe} className="mt-8 flex max-w-md border-b border-border focus-within:border-primary transition-colors">
@@ -77,12 +82,13 @@ export default function Footer() {
                 placeholder="Your email address"
                 aria-label="Email address"
                 disabled={loading}
-                className="flex-1 bg-transparent py-4 text-foreground placeholder:text-foreground/40 outline-none text-sm"
+                className="flex-1 bg-transparent py-4 text-foreground placeholder:text-foreground/60 outline-none text-sm"
               />
               <button
                 type="submit"
                 disabled={loading}
-                className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[0.7rem] uppercase tracking-label text-primary hover:text-foreground transition-colors px-3 disabled:opacity-50 select-none"
+                aria-label="Subscribe to newsletter"
+                className="min-h-[44px] min-w-[44px] flex items-center justify-center text-[0.7rem] uppercase tracking-label text-primary hover:text-foreground transition-colors px-3 disabled:opacity-50 select-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {loading ? 'Joining…' : 'Subscribe'}
               </button>
@@ -98,7 +104,7 @@ export default function Footer() {
                   <li key={item.to}>
                     <Link
                       to={item.to}
-                      className="group relative inline-flex items-center min-h-[36px] text-sm text-foreground/70 hover:text-foreground transition-colors"
+                      className="group relative inline-flex items-center min-h-[36px] text-sm text-foreground/75 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary"
                     >
                       {item.label}
                       <span className="absolute bottom-1 left-0 h-px w-0 bg-primary group-hover:w-full transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]" />
@@ -114,12 +120,15 @@ export default function Footer() {
             <p className="text-[0.65rem] uppercase tracking-ultra text-primary mb-6">Follow</p>
             <ul className="space-y-3">
               {SOCIALS.map((s) => (
-                <li key={s}>
+                <li key={s.name}>
                   <a
-                    href="#"
-                    className="group relative inline-flex items-center min-h-[36px] text-sm text-foreground/70 hover:text-foreground transition-colors"
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Follow Apex on ${s.name}`}
+                    className="group relative inline-flex items-center min-h-[36px] text-sm text-foreground/75 hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary"
                   >
-                    {s}
+                    {s.name}
                     <span className="absolute bottom-1 left-0 h-px w-0 bg-primary group-hover:w-full transition-all duration-400 ease-[cubic-bezier(0.22,1,0.36,1)]" />
                   </a>
                 </li>
@@ -130,7 +139,7 @@ export default function Footer() {
 
         <div className="mt-20 pt-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <p className="font-heading text-2xl tracking-[0.2em] text-foreground">APEX</p>
-          <p className="text-[0.65rem] uppercase tracking-label text-foreground/40">
+          <p className="text-[0.65rem] uppercase tracking-label text-foreground/60">
             © {new Date().getFullYear()} John Romeo Galan
           </p>
         </div>

@@ -24,11 +24,12 @@ export default function TrainerCard({ trainer, onClick, className, index = 0 }: 
       onClick={onClick}
       className={cn('group relative w-full overflow-hidden bg-card border border-border/40 hover:border-primary/40 transition-colors duration-500', onClick && 'cursor-pointer select-none', className)}
     >
-      <div className="aspect-[3/4] overflow-hidden bg-card">
+      <div className="aspect-[3/4] overflow-hidden bg-card relative">
         <Image
           src={trainer.image_url}
           alt={`${trainer.name}, ${trainer.role}`}
           fittingType="fill"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
           className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
         />
       </div>

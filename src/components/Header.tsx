@@ -64,8 +64,9 @@ export default function Header() {
             </Link>
             <button
               onClick={() => setOpen(true)}
-              className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 text-foreground hover:text-primary transition-colors"
-              aria-label="Open menu"
+              className="md:hidden flex items-center justify-center min-h-[44px] min-w-[44px] -mr-2 text-foreground hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label="Open navigation menu"
+              aria-expanded={open}
             >
               <Menu className="w-6 h-6" />
             </button>

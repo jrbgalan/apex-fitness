@@ -17,6 +17,9 @@ export default function Loader() {
     <AnimatePresence>
       {!done && (
         <motion.div
+          role="status"
+          aria-live="polite"
+          aria-label="Loading Apex Fitness Gym"
           className="fixed inset-0 z-[100] bg-background flex items-center justify-center"
           exit={{ y: '-100%' }}
           transition={{ duration: 1, ease: EASE }}

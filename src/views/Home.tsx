@@ -97,8 +97,9 @@ export default function Home() {
             >
               <Image
                 src={img}
-                alt={i === 0 ? 'The Apex training floor' : 'The Apex studio'}
+                alt={i === 0 ? 'The Apex training floor with Olympic platforms and conditioning equipment' : 'The Apex private coaching and recovery studio'}
                 fittingType="fill"
+                sizes="(max-width: 768px) 100vw, 50vw"
                 className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/25 to-transparent pointer-events-none" />

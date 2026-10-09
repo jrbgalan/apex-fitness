@@ -2,24 +2,21 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Image } from '@/components/ui/image';
 import { EASE } from '@/lib/motion';
 
-export interface ModalProps {
-  open: boolean;
+export interface LightboxProps {
+  src: string | null;
+  alt?: string;
   onClose: () => void;
-  children: React.ReactNode;
-  className?: string;
-  title?: string;
 }
 
-// Generic centered modal with backdrop, focus trap, Escape handling, and EASE content reveal.
-export default function Modal({ open, onClose, children, className, title = 'Dialog window' }: ModalProps) {
+export default function Lightbox({ src, alt, onClose }: LightboxProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!open) return;
+    if (!src) return;
 
     previousFocusRef.current = document.activeElement as HTMLElement;
     const originalOverflow = window.getComputedStyle(document.body).overflow;
@@ -50,14 +47,10 @@ export default function Modal({ open, onClose, children, className, title = 'Dia
 
     window.addEventListener('keydown', handleKeyDown);
 
-    // Initial focus on first interactive element or close button
+    // Initial focus on close button
     setTimeout(() => {
-      const focusables = containerRef.current?.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusables && focusables.length > 0) {
-        focusables[0].focus();
-      }
+      const closeBtn = containerRef.current?.querySelector<HTMLButtonElement>('button');
+      closeBtn?.focus();
     }, 50);
 
     return () => {
@@ -65,41 +58,49 @@ export default function Modal({ open, onClose, children, className, title = 'Dia
       window.removeEventListener('keydown', handleKeyDown);
       previousFocusRef.current?.focus?.();
     };
-  }, [open, onClose]);
+  }, [src, onClose]);
 
   return (
     <AnimatePresence>
-      {open && (
+      {src && (
         <motion.div
+          ref={containerRef}
           role="dialog"
           aria-modal="true"
-          aria-label={title}
+          aria-label={alt || 'Image lightbox'}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="fixed inset-0 z-[70] flex items-center justify-center p-4 md:p-8 overflow-y-auto"
+          className="fixed inset-0 z-[80] bg-background/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 md:p-10"
+          onClick={onClose}
         >
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-          <motion.div
-            ref={containerRef}
-            initial={{ y: 24, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 24, opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className={cn('relative z-10 w-full max-w-2xl bg-card border border-border/60 p-6 sm:p-8 md:p-10 my-auto shadow-2xl focus-visible:outline-none', className)}
+          <button
+            onClick={onClose}
+            className="absolute top-6 right-6 min-h-[44px] min-w-[44px] flex items-center justify-center p-2 text-foreground/70 hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary z-20"
+            aria-label="Close image lightbox"
           >
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 min-h-[44px] min-w-[44px] flex items-center justify-center p-2 text-foreground/60 hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary select-none"
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5" />
-            </button>
-            {children}
+            <X className="w-6 h-6" />
+          </button>
+          <motion.div
+            initial={{ scale: 0.94, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.94, opacity: 0 }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="relative max-w-5xl w-full max-h-[85vh] h-[75vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={src}
+              alt={alt || 'Apex facility view'}
+              fittingType="fit"
+              className="w-full h-full object-contain"
+              sizes="(max-width: 1200px) 100vw, 1200px"
+              priority={true}
+            />
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
+
