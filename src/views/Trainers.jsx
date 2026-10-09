@@ -1,7 +1,8 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { api } from '@/api/client';
 import { Image } from '@/components/ui/image';
 import PageTransition from '@/components/PageTransition';

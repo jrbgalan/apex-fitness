@@ -1,18 +1,18 @@
-import { Outlet } from 'react-router-dom';
+'use client';
 import Header from './Header';
 import Footer from './Footer';
 import Cursor from './Cursor';
 import Loader from './Loader';
 import StickyCTA from './StickyCTA';
 
-export default function Layout() {
+export default function Layout({ children }) {
   return (
     <>
       <Loader />
       <Cursor />
       <Header />
       <main className="min-h-screen">
-        <Outlet />
+        {children}
       </main>
       <Footer />
       <StickyCTA />

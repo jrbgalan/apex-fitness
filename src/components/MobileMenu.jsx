@@ -1,5 +1,6 @@
+'use client';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { X } from 'lucide-react';
 import { EASE } from '@/lib/motion';
 

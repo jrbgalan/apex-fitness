@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 
 // Tracks scroll direction + whether the user has scrolled past a threshold.

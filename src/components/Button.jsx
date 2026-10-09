@@ -1,5 +1,6 @@
+'use client';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { cn } from '@/lib/utils';
 import { EASE } from '@/lib/motion';
 

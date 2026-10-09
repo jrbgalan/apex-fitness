@@ -1,6 +1,7 @@
+'use client';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { toast } from 'sonner';
 import { api } from '@/api/client';
 import PageTransition from '@/components/PageTransition';

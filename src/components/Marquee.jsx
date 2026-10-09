@@ -1,3 +1,4 @@
+'use client';
 import { cn } from '@/lib/utils';
 
 // Infinite horizontal marquee. Content is duplicated; CSS animates -50%.

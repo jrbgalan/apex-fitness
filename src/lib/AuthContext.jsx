@@ -1,3 +1,4 @@
+'use client';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { api } from '@/api/client';
 import { appParams } from '@/lib/app-params';

@@ -1,5 +1,6 @@
+'use client';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Mobile-only sticky bottom CTA. Appears after the hero, hides near the footer.

@@ -1,5 +1,6 @@
+'use client';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { api } from '@/api/client';

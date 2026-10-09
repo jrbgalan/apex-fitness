@@ -1,6 +1,7 @@
+'use client';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { ArrowRight } from 'lucide-react';
 import { api } from '@/api/client';
 import { Image } from '@/components/ui/image';

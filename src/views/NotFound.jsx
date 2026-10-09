@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+'use client';
+import Link from '@/components/Link';
 import PageTransition from '@/components/PageTransition';
 
 export default function NotFound() {

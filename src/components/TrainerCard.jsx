@@ -1,3 +1,4 @@
+'use client';
 import { motion } from 'framer-motion';
 import { Image } from '@/components/ui/image';
 import { EASE, viewportOnce } from '@/lib/motion';

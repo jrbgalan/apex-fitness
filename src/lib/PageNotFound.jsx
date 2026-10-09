@@ -1,11 +1,12 @@
-import { useLocation } from 'react-router-dom';
+'use client';
+import { usePathname } from 'next/navigation';
 import { api } from '@/api/client';
 import { useQuery } from '@tanstack/react-query';
 
 
 export default function PageNotFound({}) {
-    const location = useLocation();
-    const pageName = location.pathname.substring(1);
+    const pathname = usePathname();
+    const pageName = pathname ? pathname.substring(1) : '';
 
     const { data: authData, isFetched } = useQuery({
         queryKey: ['user'],

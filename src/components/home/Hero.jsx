@@ -1,6 +1,7 @@
+'use client';
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { Image } from '@/components/ui/image';
 import { EASE, lineReveal } from '@/lib/motion';
 

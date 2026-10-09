@@ -1,6 +1,7 @@
+'use client';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import Link from '@/components/Link';
 import { cn } from '@/lib/utils';
 import { fadeUp } from '@/lib/motion';
 
