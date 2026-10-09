@@ -129,7 +129,7 @@ export default function Membership() {
       </section>
 
       {/* Pricing Cards Grid */}
-      <section className="px-6 md:px-12 pt-10 sm:pt-14 pb-24 max-w-7xl mx-auto min-h-[400px]">
+      <section className="px-6 md:px-12 pt-10 sm:pt-14 pb-24 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto min-h-[400px] content-visibility-auto">
         {error ? (
           <div className="p-8 border border-border/60 text-center max-w-lg mx-auto my-12 bg-card">
             <AlertCircle className="w-8 h-8 text-primary mx-auto mb-4" />
@@ -177,8 +177,8 @@ export default function Membership() {
       </section>
 
       {/* Full Feature Comparison Table Section */}
-      <section className="px-6 md:px-12 py-20 bg-card/25 border-y border-border/70">
-        <div className="max-w-6xl mx-auto">
+      <section className="px-6 md:px-12 py-20 bg-card/25 border-y border-border/70 content-visibility-auto">
+        <div className="max-w-6xl 3xl:max-w-[1500px] 4k:max-w-[1900px] mx-auto">
           <SectionHeading
             label="In-Depth Matrix"
             title="Comprehensive tier breakdown."
@@ -196,7 +196,7 @@ export default function Membership() {
       </section>
 
       {/* Frequently Asked Questions */}
-      <section className="px-6 md:px-12 py-24 max-w-4xl mx-auto">
+      <section className="px-6 md:px-12 py-24 max-w-4xl 3xl:max-w-5xl mx-auto content-visibility-auto">
         <SectionHeading
           label="Transparency"
           title="Frequently asked questions."

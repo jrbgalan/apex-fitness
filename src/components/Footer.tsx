@@ -60,7 +60,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-background border-t border-border" role="contentinfo">
-      <div className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
+      <div className="px-6 md:px-12 py-20 md:py-28 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
           {/* Brand + newsletter */}
           <motion.div

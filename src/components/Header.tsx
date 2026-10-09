@@ -37,7 +37,7 @@ export default function Header() {
           scrolled ? 'bg-background/90 backdrop-blur-md border-b border-border/80' : 'bg-transparent'
         )}
       >
-        <div className="flex items-center justify-between px-6 md:px-10 lg:px-12 h-20 max-w-7xl mx-auto">
+        <div className="flex items-center justify-between px-6 md:px-10 lg:px-12 h-20 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
           <Link
             to="/"
             className="font-heading text-xl tracking-[0.25em] text-foreground min-h-[44px] flex items-center shrink-0"

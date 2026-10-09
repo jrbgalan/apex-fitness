@@ -38,9 +38,15 @@ export default function StickyCTA({ label = 'Book a Tour', to = '/book-tour' }: 
       return;
     }
 
+    let ticking = false;
     const onScroll = () => {
-      const y = window.scrollY;
-      setShow(y > 500 && !footerVisible);
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        setShow(y > 500 && !footerVisible);
+        ticking = false;
+      });
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });

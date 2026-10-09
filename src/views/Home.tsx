@@ -81,8 +81,8 @@ export default function Home() {
       <Hero />
 
       {/* Intro statement */}
-      <section className="px-6 md:px-12 py-20 md:py-32">
-        <div className="max-w-5xl">
+      <section className="px-6 md:px-12 py-20 md:py-32 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
+        <div className="max-w-5xl 3xl:max-w-6xl">
           <motion.p
             variants={fadeUp}
             initial="hidden"
@@ -107,7 +107,7 @@ export default function Home() {
       </section>
 
       {/* Featured facilities */}
-      <section className="px-6 md:px-12 pb-20 md:pb-32">
+      <section className="px-6 md:px-12 pb-20 md:pb-32 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading
           label="The space"
           title="Built for the work."
@@ -127,7 +127,7 @@ export default function Home() {
                 src={img}
                 alt={i === 0 ? 'The Apex training floor with Olympic platforms and conditioning equipment' : 'The Apex private coaching and recovery studio'}
                 fittingType="fill"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1920px) 50vw, 800px"
                 className="w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/25 to-transparent pointer-events-none" />
@@ -140,8 +140,8 @@ export default function Home() {
       </section>
 
       {/* Class categories carousel */}
-      <section className="py-20 md:py-32 overflow-hidden border-t border-border/60">
-        <div className="px-6 md:px-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 max-w-7xl mx-auto">
+      <section className="py-20 md:py-32 overflow-hidden border-t border-border/60 content-visibility-auto">
+        <div className="px-6 md:px-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
           <SectionHeading label="The program" title="Classes, choreographed." />
           <Link
             to="/classes"
@@ -151,7 +151,7 @@ export default function Home() {
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" />
           </Link>
         </div>
-        <div className="mt-12 flex gap-6 overflow-x-auto no-scrollbar snap-x-mandatory px-6 md:px-12 pb-4 touch-pan-x max-w-7xl mx-auto">
+        <div className="mt-12 flex gap-6 overflow-x-auto no-scrollbar snap-x-mandatory px-6 md:px-12 pb-4 touch-pan-x max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
           {loading ? (
             Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="min-w-[280px] sm:min-w-[320px] md:min-w-[340px] border border-border/60 p-6 space-y-4 animate-pulse shrink-0 bg-card">
@@ -176,7 +176,7 @@ export default function Home() {
       </section>
 
       {/* Trainer highlights */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl mx-auto">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading
           label="The people"
           title="Coaches, not instructors."
@@ -210,8 +210,8 @@ export default function Home() {
       </section>
 
       {/* MEMBERSHIP TEASER (4 TIERS + TOGGLE + ELITE SPOTLIGHT) */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 bg-card/25">
-        <div className="max-w-7xl mx-auto">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 bg-card/25 content-visibility-auto">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <SectionHeading
               label="Membership"
@@ -284,7 +284,7 @@ export default function Home() {
       </section>
 
       {/* FEATURED PRODUCTS STRIP */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl mx-auto">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <SectionHeading
             label="The Pro Shop"
@@ -324,7 +324,7 @@ export default function Home() {
       </section>
 
       {/* Stats strip */}
-      <section className="border-y border-border/60 px-6 md:px-12 py-16 md:py-24 max-w-7xl mx-auto">
+      <section className="border-y border-border/60 px-6 md:px-12 py-16 md:py-24 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
           {STATS.map((s) => (
             <motion.div
@@ -345,9 +345,9 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20 md:py-32">
+      <section className="py-20 md:py-32 content-visibility-auto">
         <Marquee items={['Discipline', 'Strength', 'Precision', 'Recovery', 'Standard', 'Apex']} />
-        <div className="mt-16 px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-7xl mx-auto">
+        <div className="mt-16 px-6 md:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
           {TESTIMONIALS.map((t, i) => (
             <motion.blockquote
               key={i}
@@ -369,13 +369,13 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="px-6 md:px-12 py-24 md:py-40 text-center border-t border-border/60">
+      <section className="px-6 md:px-12 py-24 md:py-40 text-center border-t border-border/60 content-visibility-auto">
         <motion.div
           variants={stagger(0.12)}
           initial="hidden"
           whileInView="visible"
           viewport={viewportOnce}
-          className="max-w-3xl mx-auto"
+          className="max-w-3xl 3xl:max-w-4xl mx-auto"
         >
           <motion.p variants={fadeUp} className="text-[0.65rem] uppercase tracking-ultra text-primary mb-6">
             Begin

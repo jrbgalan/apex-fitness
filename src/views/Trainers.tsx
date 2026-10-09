@@ -37,7 +37,7 @@ export default function Trainers() {
 
   return (
     <PageTransition>
-      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12">
+      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <SectionHeading
           label="The people"
           title="Mastery, on staff."
@@ -45,7 +45,7 @@ export default function Trainers() {
         />
       </section>
 
-      <section className="px-6 md:px-12 pb-24 min-h-[300px]">
+      <section className="px-6 md:px-12 pb-24 min-h-[300px] max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         {error ? (
           <div className="p-8 border border-border/60 text-center max-w-lg mx-auto my-12">
             <AlertCircle className="w-8 h-8 text-primary mx-auto mb-4" />

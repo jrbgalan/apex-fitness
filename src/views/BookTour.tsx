@@ -117,7 +117,7 @@ export default function BookTour() {
 
   return (
     <PageTransition>
-      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12">
+      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 max-w-3xl 3xl:max-w-4xl mx-auto">
         <SectionHeading
           label="Visit"
           title="Book a private tour."
@@ -126,7 +126,7 @@ export default function BookTour() {
       </section>
 
       {/* Stepper */}
-      <section className="px-6 md:px-12 pb-8">
+      <section className="px-6 md:px-12 pb-8 max-w-3xl 3xl:max-w-4xl mx-auto">
         <div className="flex items-center gap-3 text-[0.65rem] uppercase tracking-ultra">
           {['Details', 'Date & time', 'Confirm'].map((label, i) => (
             <div key={i} className="flex items-center gap-3 min-h-[44px]">
@@ -147,7 +147,7 @@ export default function BookTour() {
         </div>
       </section>
 
-      <section className="px-6 md:px-12 pb-24 max-w-xl">
+      <section className="px-6 md:px-12 pb-24 max-w-3xl 3xl:max-w-4xl mx-auto">
         {submitError && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}

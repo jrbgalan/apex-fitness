@@ -174,19 +174,25 @@ export default function LocationDetail({
 
   // Scroll-Spy Observer
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 180;
-      for (const section of SUB_NAV_SECTIONS) {
-        const el = document.getElementById(section.id);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section.id);
-            break;
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const scrollPosition = window.scrollY + 180;
+        for (const section of SUB_NAV_SECTIONS) {
+          const el = document.getElementById(section.id);
+          if (el) {
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPosition >= top && scrollPosition < top + height) {
+              setActiveSection(section.id);
+              break;
+            }
           }
         }
-      }
+        ticking = false;
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -322,7 +328,7 @@ export default function LocationDetail({
           <div className="absolute inset-0 bg-black/40" />
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <div className="relative z-10 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto w-full">
           {/* Back link */}
           <Link
             to="/locations"
@@ -392,7 +398,7 @@ export default function LocationDetail({
 
       {/* 2. STICKY SUB-NAV WITH SCROLL-SPY */}
       <nav className="sticky top-16 md:top-20 z-30 bg-background/95 backdrop-blur-md border-y border-border/60 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 overflow-x-auto no-scrollbar py-1">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto flex items-center justify-between gap-4 overflow-x-auto no-scrollbar py-1">
           <div className="flex items-center gap-1 sm:gap-2">
             {SUB_NAV_SECTIONS.map(({ id: sectionId, label }) => {
               const isActive = activeSection === sectionId;
@@ -431,7 +437,7 @@ export default function LocationDetail({
       </nav>
 
       {/* 3. OVERVIEW SECTION */}
-      <section id="overview" className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto">
+      <section id="overview" className="px-6 md:px-12 py-20 md:py-28 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
             <span className="text-[0.68rem] uppercase tracking-ultra text-primary font-mono font-medium">
@@ -486,8 +492,8 @@ export default function LocationDetail({
       </section>
 
       {/* 4. AMENITIES SECTION */}
-      <section id="amenities" className="px-6 md:px-12 py-20 md:py-28 bg-card/30 border-y border-border/60">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section id="amenities" className="px-6 md:px-12 py-20 md:py-28 bg-card/30 border-y border-border/60 content-visibility-auto">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto space-y-12">
           <SectionHeading
             label="Club Features"
             title="Engineered for total human output."
@@ -529,7 +535,7 @@ export default function LocationDetail({
       </section>
 
       {/* 5. CLASSES & SCHEDULE SECTION */}
-      <section id="classes" className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto space-y-12">
+      <section id="classes" className="px-6 md:px-12 py-20 md:py-28 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto space-y-12 content-visibility-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <SectionHeading
             label="Club Schedule"
@@ -626,8 +632,8 @@ export default function LocationDetail({
       </section>
 
       {/* 6. PHOTO GALLERY WITH ASYMMETRIC MASONRY & LIGHTBOX */}
-      <section id="gallery" className="px-6 md:px-12 py-20 md:py-28 bg-card/20 border-y border-border/60">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section id="gallery" className="px-6 md:px-12 py-20 md:py-28 bg-card/20 border-y border-border/60 content-visibility-auto">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto space-y-12">
           <SectionHeading
             label="Visual Archival"
             title="The Club Sanctuary Gallery."
@@ -747,7 +753,7 @@ export default function LocationDetail({
       </AnimatePresence>
 
       {/* 7. HOURS SECTION */}
-      <section id="hours" className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto space-y-10">
+      <section id="hours" className="px-6 md:px-12 py-20 md:py-28 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto space-y-10 content-visibility-auto">
         <SectionHeading
           label="Club Access"
           title="Daily Operating Hours."
@@ -817,8 +823,8 @@ export default function LocationDetail({
       </section>
 
       {/* 8. CONTACT SECTION WITH EMBEDDED MINI MAP */}
-      <section id="contact" className="px-6 md:px-12 py-20 md:py-28 bg-card/30 border-t border-border/60">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <section id="contact" className="px-6 md:px-12 py-20 md:py-28 bg-card/30 border-t border-border/60 content-visibility-auto">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto space-y-12">
           <SectionHeading
             label="Direct Concierge"
             title="Connect with this clubhouse."
@@ -896,7 +902,7 @@ export default function LocationDetail({
 
       {/* 9. OTHER CLUBS NEAR YOU CAROUSEL */}
       {otherLocations.length > 0 && (
-        <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl mx-auto space-y-10 border-t border-border/60">
+        <section className="px-6 md:px-12 py-20 md:py-28 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto space-y-10 border-t border-border/60 content-visibility-auto">
           <div className="flex items-end justify-between">
             <SectionHeading
               label="Network Exploration"

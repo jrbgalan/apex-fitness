@@ -56,7 +56,7 @@ export default function Contact() {
           />
         </section>
 
-        <section className="px-6 md:px-12 max-w-7xl mx-auto mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <section className="px-6 md:px-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Contact Form */}
           <div className="lg:col-span-7 bg-card border border-border/80 p-8 sm:p-10">
             <h2 className="font-heading text-2xl text-foreground mb-2">Send an Inquiry</h2>

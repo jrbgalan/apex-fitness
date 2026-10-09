@@ -212,7 +212,7 @@ export default function AdminPage() {
         />
 
         {/* Dynamic Viewport */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] 3xl:max-w-[1920px] 4k:max-w-[2400px] mx-auto">
           {dataLoading && (
             <div className="mb-6 flex items-center gap-2 px-4 py-2 rounded-lg bg-card/60 border border-border text-xs text-muted-foreground w-fit animate-pulse">
               <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />

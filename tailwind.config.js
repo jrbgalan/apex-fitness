@@ -4,6 +4,18 @@ module.exports = {
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
     extend: {
+      screens: {
+        'xs': '420px',
+        '3xl': '1920px',
+        '4k': '2560px',
+        '4k-uhd': '3840px',
+      },
+      maxWidth: {
+        '8xl': '88rem',
+        '9xl': '96rem',
+        '4k': '160rem',
+        '4k-uhd': '240rem',
+      },
       opacity: Object.fromEntries(Array.from({ length: 101 }, (_, i) => [i, `${i / 100}`])),
       borderRadius: {
         lg: 'var(--radius)',

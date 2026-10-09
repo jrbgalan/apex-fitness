@@ -60,7 +60,7 @@ export default function Shop() {
   return (
     <PageTransition>
       {/* Header section */}
-      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 text-center max-w-5xl mx-auto">
+      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 text-center max-w-5xl 3xl:max-w-6xl mx-auto">
         <SectionHeading
           label="The Pro Shop"
           title="Apparel, gear, and fuel."
@@ -91,7 +91,7 @@ export default function Shop() {
       </section>
 
       {/* Product Catalog Grid */}
-      <section className="px-6 md:px-12 pb-32 max-w-7xl mx-auto min-h-[500px]">
+      <section className="px-6 md:px-12 pb-32 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto min-h-[500px] content-visibility-auto">
         {error ? (
           <div className="p-8 border border-border/60 text-center max-w-lg mx-auto my-12 bg-card">
             <AlertCircle className="w-8 h-8 text-primary mx-auto mb-4" />

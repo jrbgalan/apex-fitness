@@ -36,7 +36,7 @@ export default function Hero() {
 
       <motion.div
         style={{ opacity }}
-        className="relative z-10 h-full flex flex-col justify-end px-6 md:px-12 pb-24 md:pb-32"
+        className="relative z-10 h-full flex flex-col justify-end px-6 md:px-12 pb-24 md:pb-32 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto w-full"
       >
         <motion.p
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}

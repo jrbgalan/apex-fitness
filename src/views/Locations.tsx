@@ -299,7 +299,7 @@ export default function Locations() {
 
       {/* 2. FILTERS & CONTROLS BAR */}
       <section className="sticky top-16 md:top-20 z-30 bg-background/95 backdrop-blur-md border-b border-border/60 py-3.5 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
           {/* City Filter Chips */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar snap-x-mandatory pb-1 lg:pb-0">
             <span className="text-[0.68rem] uppercase tracking-ultra font-mono text-muted-foreground hidden sm:inline mr-1 shrink-0">
@@ -414,7 +414,7 @@ export default function Locations() {
         </div>
 
         {/* Amenity Filter Chips */}
-        <div className="max-w-7xl mx-auto mt-3 pt-3 border-t border-border/40 flex items-center gap-1.5 overflow-x-auto no-scrollbar snap-x-mandatory pb-1">
+        <div className="max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto mt-3 pt-3 border-t border-border/40 flex items-center gap-1.5 overflow-x-auto no-scrollbar snap-x-mandatory pb-1">
           <span className="text-[0.65rem] uppercase tracking-ultra font-mono text-muted-foreground shrink-0 mr-1 hidden sm:inline">
             Amenities:
           </span>
@@ -441,7 +441,7 @@ export default function Locations() {
       </section>
 
       {/* 3. MAIN CONTENT: DUAL LIST & MAP VIEW */}
-      <section className="px-6 md:px-12 py-10 max-w-7xl mx-auto min-h-[600px]">
+      <section className="px-6 md:px-12 py-10 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto min-h-[600px]">
         {error ? (
           <div className="p-8 border border-border/60 text-center max-w-lg mx-auto my-16 bg-card">
             <AlertCircle className="w-8 h-8 text-primary mx-auto mb-4" />

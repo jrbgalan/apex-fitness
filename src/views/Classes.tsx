@@ -54,7 +54,7 @@ export default function Classes() {
 
   return (
     <PageTransition>
-      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12">
+      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <SectionHeading
           label="The Program"
           title="Every class, a discipline."
@@ -63,7 +63,7 @@ export default function Classes() {
       </section>
 
       {/* Category tabs */}
-      <section className="px-6 md:px-12 pb-10">
+      <section className="px-6 md:px-12 pb-10 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <div className="flex gap-2 overflow-x-auto no-scrollbar max-w-full pb-3 border-b border-border/60 snap-x-mandatory">
           {CATEGORIES.map((cat) => (
             <button
@@ -83,7 +83,7 @@ export default function Classes() {
       </section>
 
       {/* Grid or Skeletons */}
-      <section className="px-6 md:px-12 pb-24 min-h-[300px]">
+      <section className="px-6 md:px-12 pb-24 min-h-[300px] max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         {error ? (
           <div className="p-8 border border-border/60 text-center max-w-lg mx-auto my-12 bg-card">
             <AlertCircle className="w-8 h-8 text-primary mx-auto mb-4" />
@@ -132,7 +132,7 @@ export default function Classes() {
       </section>
 
       {/* Weekly schedule */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading label="The Week" title="The master schedule." intro="Live weekly class times across our training studios." />
         <div className="mt-10 flex gap-2 overflow-x-auto no-scrollbar snap-x-mandatory pb-2 touch-pan-x">
           {DAYS.map((d) => (

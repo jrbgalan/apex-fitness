@@ -33,7 +33,7 @@ export default function About() {
 
   return (
     <PageTransition>
-      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12">
+      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <SectionHeading
           label="The club"
           title="Apex began with a question."
@@ -42,7 +42,7 @@ export default function About() {
       </section>
 
       {/* Story */}
-      <section className="px-6 md:px-12 py-12 md:py-20 max-w-4xl">
+      <section className="px-6 md:px-12 py-12 md:py-20 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <motion.div
           variants={stagger(0.14)}
           initial="hidden"
@@ -63,7 +63,7 @@ export default function About() {
       </section>
 
       {/* Values */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading label="What we believe" title="Three rules." />
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
           {VALUES.map((v) => (
@@ -83,7 +83,7 @@ export default function About() {
       </section>
 
       {/* Timeline */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading label="The road" title="Seven years." />
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {TIMELINE.map((t) => (
@@ -103,7 +103,7 @@ export default function About() {
       </section>
 
       {/* Team */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading label="The team" title="Six specialists." />
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 border-t border-border/60">
           {loading ? (

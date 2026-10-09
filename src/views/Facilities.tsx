@@ -30,7 +30,7 @@ export default function Facilities() {
 
   return (
     <PageTransition>
-      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12">
+      <section className="px-6 md:px-12 pt-36 md:pt-44 pb-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto">
         <SectionHeading
           label="The Space"
           title="A room with intent."
@@ -39,7 +39,7 @@ export default function Facilities() {
       </section>
 
       {/* Gallery (12+ photos with lightbox) */}
-      <section className="px-6 md:px-12 pb-24">
+      <section className="px-6 md:px-12 pb-24 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
           {INITIAL_FACILITY_PHOTOS.map((item, i) => (
             <motion.button
@@ -77,7 +77,7 @@ export default function Facilities() {
       </section>
 
       {/* Amenities */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <SectionHeading label="Included" title="The amenities." />
         <motion.div
           variants={stagger(0.04)}
@@ -100,7 +100,7 @@ export default function Facilities() {
       </section>
 
       {/* Hours + location */}
-      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <section className="px-6 md:px-12 py-20 md:py-32 border-t border-border/60 grid grid-cols-1 md:grid-cols-2 gap-12 max-w-7xl 3xl:max-w-[1700px] 4k:max-w-[2200px] mx-auto content-visibility-auto">
         <div>
           <SectionHeading label="Visit" title="Hours." />
           <div className="mt-8 border-t border-border/60">
