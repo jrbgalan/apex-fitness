@@ -53,7 +53,7 @@ export default function PricingCard({ plan, annual, index = 0, onSelect }: Prici
       className={cn(
         'relative transition-all duration-300',
         isElite
-          ? 'z-20 lg:scale-[1.08] lg:-my-4 order-first lg:order-none'
+          ? 'z-20 lg:scale-[1.08] lg:my-0 order-first lg:order-none'
           : 'order-2 lg:order-none z-10'
       )}
       style={{

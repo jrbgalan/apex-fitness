@@ -129,7 +129,7 @@ export default function Membership() {
       </section>
 
       {/* Pricing Cards Grid */}
-      <section className="px-6 md:px-12 pb-24 max-w-7xl mx-auto min-h-[400px]">
+      <section className="px-6 md:px-12 pt-10 sm:pt-14 pb-24 max-w-7xl mx-auto min-h-[400px]">
         {error ? (
           <div className="p-8 border border-border/60 text-center max-w-lg mx-auto my-12 bg-card">
             <AlertCircle className="w-8 h-8 text-primary mx-auto mb-4" />
