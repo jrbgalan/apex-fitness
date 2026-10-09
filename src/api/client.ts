@@ -289,8 +289,8 @@ export const api = {
         }
         return [...INITIAL_LOCATIONS];
       },
-      get: async (id: string): Promise<LocationItem | null> =>
-        INITIAL_LOCATIONS.find((l) => l.id === id) || null,
+      get: async (idOrSlug: string): Promise<LocationItem | null> =>
+        INITIAL_LOCATIONS.find((l) => l.id === idOrSlug || l.slug === idOrSlug) || null,
     },
     Products: ProductsAPI,
     Orders: OrdersAPI,

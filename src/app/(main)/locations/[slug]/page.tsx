@@ -3,14 +3,15 @@ import LocationDetail from '@/views/LocationDetail';
 import { INITIAL_LOCATIONS } from '@/data/mockData';
 
 export async function generateStaticParams() {
-  return INITIAL_LOCATIONS.map((loc) => ({
-    id: loc.id,
-  }));
+  return INITIAL_LOCATIONS.flatMap((loc) => [
+    { slug: loc.slug },
+    { slug: loc.id },
+  ]);
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const location = INITIAL_LOCATIONS.find((l) => l.id === id);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const location = INITIAL_LOCATIONS.find((l) => l.slug === slug || l.id === slug);
   if (!location) {
     return { title: 'Club Location | Apex Fitness Gym' };
   }
@@ -25,8 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function LocationDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  return <LocationDetail id={id} />;
+export default async function LocationDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  return <LocationDetail slug={slug} />;
 }
 

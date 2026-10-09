@@ -210,7 +210,111 @@
   .animate-shimmer,
   .animate-border-shimmer,
   .animate-float-badge,
-  .animate-shine-sweep {
+  .animate-shine-sweep,
+  .champagne-marker-pulse {
     animation: none !important;
+  }
+}
+
+/* ========================================================
+   LEAFLET CUSTOM DARK & CHAMPAGNE STYLING
+   ======================================================== */
+.leaflet-container {
+  background-color: #0d0d0d !important;
+  font-family: inherit;
+  outline: none;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #141414 !important;
+  color: #f5f5f5 !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.85), 0 0 20px rgba(212, 175, 55, 0.15) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  line-height: normal !important;
+}
+
+.leaflet-popup-tip {
+  background: #141414 !important;
+  border: 1px solid rgba(212, 175, 55, 0.35) !important;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+  color: #a3a3a3 !important;
+  top: 8px !important;
+  right: 8px !important;
+  font-size: 16px !important;
+  padding: 4px !important;
+  width: 22px !important;
+  height: 22px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  border-radius: 9999px !important;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: #d4af37 !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+}
+
+.custom-champagne-marker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.champagne-marker-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background-color: #d4af37;
+  border: 2px solid #0a0a0a;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease;
+}
+
+.champagne-marker-pulse {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  background-color: rgba(212, 175, 55, 0.35);
+  animation: marker-pulse-anim 2.5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  z-index: 1;
+}
+
+.custom-champagne-marker.is-active .champagne-marker-dot {
+  transform: scale(1.4);
+  background-color: #f5e6a3;
+  box-shadow: 0 0 16px rgba(245, 230, 163, 0.95), 0 0 24px rgba(212, 175, 55, 0.6);
+}
+
+.custom-champagne-marker.is-active .champagne-marker-pulse {
+  animation-duration: 1.6s;
+  background-color: rgba(212, 175, 55, 0.6);
+}
+
+@keyframes marker-pulse-anim {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
   }
 }

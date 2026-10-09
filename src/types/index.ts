@@ -64,20 +64,51 @@ export interface ScheduleSlotItem {
   category: string;
   end_time?: string;
   spots_remaining?: number;
+  location?: string;
+}
+
+export interface DailyHours {
+  day: string;
+  open: string;
+  close: string;
+  is24Hours?: boolean;
+}
+
+export interface LocationStats {
+  sqft: number;
+  studios: number;
+  trainers: number;
+}
+
+export interface GalleryPhoto {
+  url: string;
+  photographer: string;
+  credit?: string;
+  caption?: string;
 }
 
 export interface LocationItem {
   id: string;
+  slug: string;
   name: string;
   city: string;
+  neighborhood: string;
   address: string;
+  latitude: number;
+  longitude: number;
+  phone: string;
+  email: string;
   hours: string;
+  daily_hours?: DailyHours[];
   amenities: string[];
+  stats: LocationStats;
   photo: string;
+  hero_image: string;
   gallery: string[];
+  gallery_photos?: GalleryPhoto[];
   description: string;
-  phone?: string;
   credit?: string;
+  photographer?: string;
 }
 
 export type ProductCategory = 'Apparel' | 'Supplements' | 'Equipment' | 'Accessories' | 'Wellness Tech';
